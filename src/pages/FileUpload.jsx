@@ -46,16 +46,17 @@ function FileUpload() {
       // ✅ 악보 생성 요청 (즉시 응답)
       const res = await axiosInstance.post('/create_sheets', formData);
       console.log(res.data);
-      const { job_id } = res.data;
-      if (!job_id) {
+      const { jobId } = res.data;
+
+      if (!jobId) {
         alert('job_id를 받지 못했습니다.');
         return;
       }
 
-      // ✅ ConvertingPage로 이동 (job_id만 전달)
       navigate('/converting', {
-        state: { job_id },
+        state: { job_id: jobId }   // 프론트에서는 job_id로 통일
       });
+
 
     } catch (err) {
       console.error(err);
