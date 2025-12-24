@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://13.211.147.73:8000',
 });
 
 // 요청마다 accessToken 자동 첨부
