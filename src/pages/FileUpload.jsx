@@ -45,8 +45,8 @@ function FileUpload() {
     try {
       // ✅ 악보 생성 요청 (즉시 응답)
       const res = await axiosInstance.post('/create_sheets', formData);
-
-      const { job_id } = res.data.jobId;
+      console.log(res.data);
+      const { job_id } = res.data;
       if (!job_id) {
         alert('job_id를 받지 못했습니다.');
         return;

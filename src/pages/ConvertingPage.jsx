@@ -27,7 +27,7 @@ function ConvertingPage() {
     const pollingTimer = setInterval(async () => {
       try {
         const res = await axiosInstance.get(
-          `/create_sheets?job_id=${job_id}`
+          `/create_sheets?job_id=${job_id.jobId}`
         );
 
         const { status } = res.data;
