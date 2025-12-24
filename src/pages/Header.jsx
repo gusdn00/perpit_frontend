@@ -12,7 +12,7 @@ function Header() {
 
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     navigate('/');
   };
