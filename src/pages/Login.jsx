@@ -7,6 +7,8 @@ import '../styles/Login.css';
 import { isLoggedInState } from "../authState";
 import { useRecoilState } from "recoil";
 
+// 로직 건들거 없음 css만 개편하기.
+
 function Login() {
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");

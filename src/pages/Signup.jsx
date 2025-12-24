@@ -55,8 +55,8 @@ function SignUp() {
   const handleCheckUserId = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.get(`http://localhost:8080/api/auth/userid-signup-dup`, {
-        params: { userid: form.userid },
+      const res = await axios.get(`api/auth/check-id`, {
+        params: { id: form.userid },
       });
       alert(res.data.message); // ex) "사용 가능한 아이디입니다."
     } catch (err) {
@@ -65,6 +65,8 @@ function SignUp() {
   };
 
   // Email 중복 확인
+
+  /*
   const handleCheckEmail = async (e) => {
     e.preventDefault();
     try {
@@ -76,6 +78,7 @@ function SignUp() {
       alert("이미 사용 중인 이메일입니다.");
     }
   };
+  */
   /* ---------- 4. JSX ---------- */
   return (
     <div className="signup-screen">
