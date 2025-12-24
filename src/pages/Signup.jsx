@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "../styles/Signup.css";
-
+//닉네임 기능 삭제함 나중에 리팩토링 해야함
 function SignUp() {
   /* ---------- 1. 상태 정의 ---------- */
   // const [form, setForm] = useState({

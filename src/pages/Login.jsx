@@ -17,8 +17,8 @@ function Login() {
     const handleLogin = async (event) => {
     event.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8080/api/auth/login', {
-        userid: id,
+        const response = await axios.post('/api/auth/login', {
+        id: id,
         password: pw
         });
         console.log(response.data);
