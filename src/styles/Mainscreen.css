@@ -82,3 +82,11 @@
   background-color: #0d8a6b;
   transform: translateY(-2px);
 }
+
+.body-sample-img {
+  width: 100%;
+  max-height: 300px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}

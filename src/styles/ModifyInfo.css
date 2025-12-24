@@ -1,0 +1,118 @@
+.profile-edit-screen {
+  height: 82vh;
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e2e2e;
+}
+
+.profile-edit-box {
+  width: 550px;
+  padding: 40px 40px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-edit-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.profile-edit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.label {
+  width: 100px;
+  font-weight: 500;
+  color: #555;
+}
+
+.fixed-value {
+  color: #333;
+}
+
+.edit-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+  border-color: #009688;
+  outline: none;
+}
+
+.check-btn {
+  height: 36px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.check-btn:hover {
+  background-color: #10a37f;
+  color: white;
+  border-color: #10a37f;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.edit-btn {
+  flex: 1;
+  height: 48px;
+  font-size: 15px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back {
+  background-color: #ccc;
+  color: #333;
+}
+
+.back:hover {
+  background-color: #bbb;
+}
+
+.save {
+  background-color: #009688;
+  color: white;
+}
+
+.save:hover {
+  background-color: #00796b;
+  transform: translateY(-1px);
+}

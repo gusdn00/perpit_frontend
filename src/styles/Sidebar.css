@@ -28,7 +28,7 @@
   position: relative;
 }
 
-.toggle-btn {
+.sidebar-toggle-btn {
   background: none;
   border: none;
   color: #fff;
@@ -40,7 +40,7 @@
   transform: translateX(-50%);
 }
 
-.sidebar.opened .toggle-btn {
+.sidebar.opened .sidebar-toggle-btn {
   right: 20px;
   left: auto;
   transform: none;

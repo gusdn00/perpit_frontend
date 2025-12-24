@@ -1,0 +1,45 @@
+.converting-wrapper {
+  min-height: calc(100vh - 15vh);
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f8f8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.converting-card {
+  width: 480px;
+  padding: 40px 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.converting-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #10a37f;
+  transition: width 0.3s ease;
+}
+
+.desc-text {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}

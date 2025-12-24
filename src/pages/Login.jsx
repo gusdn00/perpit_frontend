@@ -1,22 +1,37 @@
+import React from 'react';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import axios from "axios";
 import '../styles/Login.css';
+import { isLoggedInState } from "../authState";
+import { useRecoilState } from "recoil";
 
 function Login() {
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async () => {
+    const [isLoggedIn, setLoggedIn] = useRecoilState(isLoggedInState);
+
+    const handleLogin = async (event) => {
+    event.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8080/api/submit', {
-        id: id,
-        pw: pw
+        const response = await axios.post('http://localhost:8080/api/auth/login', {
+        userid: id,
+        password: pw
         });
         console.log(response.data);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        alert("로그인 성공");
+        setLoggedIn(true);
+        navigate('/');
+        
+        
     } catch (error) {
         console.error(error);
+        alert("로그인 실패")
     }
     };
   return (

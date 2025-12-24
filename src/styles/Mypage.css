@@ -1,0 +1,77 @@
+.profile-screen {
+  height: 82vh;
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e2e2e;
+}
+
+.profile-box {
+  width: 500px;
+  padding: 40px 40px; /* 좌우 padding 증가 */
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* 위아래 여백 확대 */
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* 각 항목 간 간격 증가 */
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  padding: 8px 50px; /* 항목 위아래 여백 추가 */
+}
+
+.label {
+  font-weight: 500;
+  color: #555;
+}
+
+.value {
+  color: #333;
+  max-width: 60%;
+  word-break: break-all; /* 길어질 때 줄바꿈 */
+  text-align: right;     /* 오른쪽 정렬로 간격 확보 */
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 16px; /* 버튼 간격 확대 */
+  margin-top: 20px;
+}
+
+.profile-btn {
+  flex: 1;
+  height: 48px;
+  background-color: #009688;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.profile-btn:hover {
+  background-color: #00796b;
+  transform: translateY(-1px);
+}
