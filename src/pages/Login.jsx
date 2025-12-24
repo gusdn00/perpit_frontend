@@ -22,7 +22,7 @@ function Login() {
         password: pw
         });
         console.log(response.data);
-        localStorage.setItem("Token", response.token);
+        localStorage.setItem("Token", response.data.token);
         alert("로그인 성공");
         setLoggedIn(true);
         navigate('/');
