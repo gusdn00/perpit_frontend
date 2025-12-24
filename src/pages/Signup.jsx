@@ -4,10 +4,17 @@ import "../styles/Signup.css";
 
 function SignUp() {
   /* ---------- 1. 상태 정의 ---------- */
+  // const [form, setForm] = useState({
+  //   userid: "",
+  //   username: "",
+  //   nickname: "",
+  //   password: "",
+  //   confirmPw: "",
+  //   email: "",
+  // });
   const [form, setForm] = useState({
     userid: "",
     username: "",
-    nickname: "",
     password: "",
     confirmPw: "",
     email: "",
@@ -30,10 +37,9 @@ function SignUp() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/signup", {
-        userid: form.userid,
-        username: form.username,
-        nickname: form.nickname,
+      const res = await axios.post("http://localhost:8000/api/auth/signup", {
+        user_id: form.userid,
+        name: form.username,
         password: form.password,
         email: form.email,
       });
@@ -108,7 +114,7 @@ function SignUp() {
               
             </div>
 
-            {/* 닉네임 */}
+            {/* 닉네임
             <div className="input-group">
               <label htmlFor="nickname">Nickname :</label>
               <input
@@ -120,7 +126,7 @@ function SignUp() {
                 onChange={handleChange}
                 required
               />
-            </div>
+            </div> */}
 
             {/* 비밀번호 */}
             <div className="input-group">
