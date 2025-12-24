@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 // 요청마다 token 자동 첨부
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('Token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
