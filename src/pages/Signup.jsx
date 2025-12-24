@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../styles/SignUp.css";
+import "../styles/Signup.css";
 
 function SignUp() {
   /* ---------- 1. 상태 정의 ---------- */
