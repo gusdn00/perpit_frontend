@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Mainscreen.css';
 import sampleSheet from '../assets/sample.png';
-
+import { Link } from 'react-router-dom';
 function Mainscreen() {
   return (
     <div className='mainscreen'>
@@ -25,7 +25,9 @@ function Mainscreen() {
             </div>
           </div>
         </div>
-        <button className="start-btn">Start</button>
+        <Link to="/file-upload" className="start-link">
+          <button className="start-btn">Start</button>
+        </Link>
       </div>
     </div>
   );  

@@ -63,10 +63,16 @@
   color: #333;
 }
 
+.start-link {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+  text-decoration: none;
+}
+
 .start-btn {
   height: 48px;
   width: 160px;
-  align-self: center;
   background-color: #10a37f;
   color: white;
   font-size: 17px;
