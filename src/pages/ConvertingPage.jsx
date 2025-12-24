@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance from '../axiosInstance';
 import '../styles/ConvertingPage.css';
 
 function ConvertingPage() {
