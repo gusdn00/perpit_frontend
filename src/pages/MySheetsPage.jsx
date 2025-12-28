@@ -34,30 +34,19 @@ function MySheetsPage() {
      View (🔥 view 링크 재발급)
      ========================= */
   const handleView = async (sid) => {
-    if (viewingSid) return;
+  try {
+    const res = await axiosInstance.get(
+      `/create_sheets/mysheets/${sid}/view`
+    );
 
-    try {
-      setViewingSid(sid);
+    localStorage.setItem('currentSheetViewUrl', res.data.view_url);
+    window.open('/sheet-viewer', '_blank');
+  } catch (err) {
+    console.error(err);
+    alert('미리보기 링크를 불러오지 못했습니다.');
+  }
+};
 
-      const res = await axiosInstance.get(
-        `/create_sheets/mysheets/${sid}/view`
-      );
-
-      const { view_url } = res.data;
-      if (!view_url) {
-        alert('미리보기 링크를 받지 못했습니다.');
-        return;
-      }
-
-      localStorage.setItem('currentSheetUrl', view_url);
-      window.open('/sheet-viewer', '_blank');
-    } catch (err) {
-      console.error(err);
-      alert('미리보기를 불러오지 못했습니다.');
-    } finally {
-      setViewingSid(null);
-    }
-  };
 
   /* =========================
      Download (기존 link)

@@ -45,30 +45,22 @@ function SheetCompletePage() {
      View (🔥 view용 링크 재발급)
      ========================= */
   const handleView = async () => {
-    if (viewLoading) return;
+  try {
+    const res = await axiosInstance.get(
+      `/create_sheets/${job_id}/view`
+    );
 
-    try {
-      setViewLoading(true);
+    const { view_url } = res.data;
 
-      const res = await axiosInstance.get(
-        `/create_sheets/${job_id}/view`
-      );
+    
+    localStorage.setItem('currentSheetViewUrl', view_url);
+    window.open('/sheet-viewer', '_blank');
+  } catch (err) {
+    console.error(err);
+    alert('미리보기 링크를 가져오지 못했습니다.');
+  }
+};
 
-      const { view_url } = res.data;
-      if (!view_url) {
-        alert('미리보기 링크를 받지 못했습니다.');
-        return;
-      }
-
-      localStorage.setItem('currentSheetUrl', view_url);
-      window.open('/sheet-viewer', '_blank');
-    } catch (err) {
-      console.error(err);
-      alert('미리보기를 불러오지 못했습니다.');
-    } finally {
-      setViewLoading(false);
-    }
-  };
 
   /* =========================
      Download (기존 download 링크 사용)

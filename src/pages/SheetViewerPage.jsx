@@ -1,72 +1,55 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
-import '../styles/SheetViewerPage.css';
 
 function SheetViewerPage() {
   const containerRef = useRef(null);
-  const osmdRef = useRef(null);
-  const [loading, setLoading] = useState(true);
+  const iframeRef = useRef(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const viewUrl = localStorage.getItem('currentSheetUrl');
-
+    const viewUrl = localStorage.getItem('currentSheetViewUrl');
     if (!viewUrl) {
-      setError('악보 링크가 없습니다.');
-      setLoading(false);
+      setError('악보 URL이 없습니다.');
       return;
     }
 
-    const loadSheet = async () => {
+    const iframe = iframeRef.current;
+
+    iframe.onload = async () => {
       try {
-        // 🔥 핵심: XML 직접 fetch
-        const res = await fetch(viewUrl);
-        if (!res.ok) {
-          throw new Error('악보 파일을 불러오지 못했습니다.');
-        }
+        // iframe 안의 XML 문서 접근
+        const xmlDoc = iframe.contentDocument;
+        const xmlText = new XMLSerializer().serializeToString(xmlDoc);
 
-        const xmlText = await res.text();
+        const osmd = new OpenSheetMusicDisplay(containerRef.current, {
+          autoResize: true,
+          drawTitle: true,
+        });
 
-        // OSMD 인스턴스 생성
-        osmdRef.current = new OpenSheetMusicDisplay(
-          containerRef.current,
-          {
-            autoResize: true,
-            drawTitle: true,
-            backend: 'svg',
-          }
-        );
-
-        // 🔥 XML 문자열을 로드
-        await osmdRef.current.load(xmlText);
-        osmdRef.current.render();
-
-      } catch (err) {
-        console.error(err);
-        setError('악보를 렌더링하는 데 실패했습니다.');
-      } finally {
-        setLoading(false);
+        await osmd.load(xmlText);
+        osmd.render();
+      } catch (e) {
+        console.error(e);
+        setError('악보 렌더링에 실패했습니다.');
       }
     };
-
-    loadSheet();
   }, []);
 
-  if (loading) {
-    return <div className="sheet-viewer-loading">Loading sheet...</div>;
-  }
-
-  if (error) {
-    return <div className="sheet-viewer-error">{error}</div>;
-  }
-
   return (
-    <div className="sheet-viewer-page">
-      <h2 className="viewer-title">Sheet Preview</h2>
-      <div
-        ref={containerRef}
-        className="sheet-viewer-container"
+    <div style={{ padding: '24px' }}>
+      <h2>Sheet Preview</h2>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {/* 🔑 CORS 우회 핵심 */}
+      <iframe
+        ref={iframeRef}
+        src={localStorage.getItem('currentSheetViewUrl')}
+        style={{ display: 'none' }}
+        title="xml-loader"
       />
+
+      <div ref={containerRef} />
     </div>
   );
 }
