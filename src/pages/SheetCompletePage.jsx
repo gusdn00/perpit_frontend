@@ -41,31 +41,13 @@ function SheetCompletePage() {
   }, [job_id, navigate]);
 
   /* =========================
-     Add My Sheets
+     View (MusicXML Viewer)
      ========================= */
-  const handleAddMySheet = async () => {
-    if (saving) return;
-
-    try {
-      setSaving(true);
-
-      const res = await axiosInstance.post(
-        `/create_sheets/${job_id}/add`
-      );
-
-      alert(res.data.message);
-    } catch (err) {
-      console.error(err);
-      alert('내 악보 저장에 실패했습니다.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleView = (link) => {
-  localStorage.setItem('currentSheetUrl', link);
-  window.open('/sheet-viewer', '_blank');
-};
+    if (!link) return;
+    localStorage.setItem('currentSheetUrl', link);
+    window.open('/sheet-viewer', '_blank');
+  };
 
   /* =========================
      Download (XML)
@@ -73,12 +55,32 @@ function SheetCompletePage() {
   const handleDownload = () => {
     if (!sheetData?.result_url) return;
 
-    const link = document.createElement('a');
-    link.href = sheetData.result_url;
-    link.download = `${sheetData.title || 'sheet'}.musicxml`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = sheetData.result_url;
+    a.download = `${sheetData.title || 'sheet'}.musicxml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  /* =========================
+     Add My Sheets
+     ========================= */
+  const handleAddMySheet = async () => {
+    if (saving) return;
+
+    try {
+      setSaving(true);
+      const res = await axiosInstance.post(
+        `/create_sheets/${job_id}/add`
+      );
+      alert(res.data.message || '내 악보에 저장되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('내 악보 저장에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -95,10 +97,12 @@ function SheetCompletePage() {
         </h2>
 
         <div className="sheet-content">
-          {/* 미리보기 / View */}
+          {/* =========================
+              미리보기 (View)
+             ========================= */}
           <div
             className="sheet-images"
-            onClick={() => window.open(result_url, '_blank')}
+            onClick={() => handleView(result_url)}
           >
             <div className="overlay">
               <FaPlayCircle size={50} className="play-icon" />
@@ -109,12 +113,14 @@ function SheetCompletePage() {
             </div>
           </div>
 
-          {/* 정보 & 버튼 */}
+          {/* =========================
+              정보 & 버튼
+             ========================= */}
           <div className="sheet-info">
             <p className="info-text">
               <b>제목 : {title}</b><br /><br />
               악보 생성이 완료되었습니다.<br />
-              다운로드하거나 내 악보에 저장할 수 있습니다.
+              미리보기, 다운로드 또는 내 악보에 저장할 수 있습니다.
             </p>
 
             <button
@@ -127,7 +133,7 @@ function SheetCompletePage() {
             <div className="btn-group">
               <button
                 className="btn sub-btn"
-                onClick={() => handleView(sheet.link)}
+                onClick={() => handleView(result_url)}
               >
                 View
               </button>
