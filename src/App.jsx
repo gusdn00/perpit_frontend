@@ -14,7 +14,7 @@ import FileUpload from './pages/FileUpload';
 import ConvertingPage from './pages/ConvertingPage';
 import SheetCompletePage from './pages/SheetCompletePage';
 import MySheetsPage from './pages/MySheetsPage';
-import SheetViewerPage from './pages/SheetViewerPage'
+
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -36,8 +36,7 @@ function App() {
             <Route path="/converting" element={<ConvertingPage/>}/>
             <Route path="/sheet-complete" element={<SheetCompletePage/>}/>
             <Route path="/mysheets" element={<MySheetsPage/>}/>
-            <Route path="/sheet-viewer" element={<SheetViewerPage />} />
-
+          
           </Routes>
       </Router>
     </>
