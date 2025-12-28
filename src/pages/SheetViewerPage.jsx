@@ -1,88 +1,94 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import axiosInstance from '../axiosInstance';
+import '../styles/SheetViewerPage.css'; // 제공해주신 CSS 연결
 
 function SheetViewerPage() {
   const containerRef = useRef(null);
   const osmdRef = useRef(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
+  // XML 보정 함수
   const sanitizeMusicXML = (xml) => {
-  let cleaned = xml;
-
-  // 1️⃣ DOCTYPE 제거 (가장 중요)
-  cleaned = cleaned.replace(/<!DOCTYPE[^>]*>/gi, '');
-
-  // 2️⃣ XML 선언 앞뒤 공백 제거
-  cleaned = cleaned.trim();
-
-  // 3️⃣ 빈 part-name 보정
-  cleaned = cleaned.replace(
-    /<part-name\s*\/>/gi,
-    '<part-name>Music</part-name>'
-  );
-
-  return cleaned;
-};
+    let cleaned = xml;
+    cleaned = cleaned.replace(/<!DOCTYPE[^>]*>/gi, '');
+    cleaned = cleaned.trim();
+    cleaned = cleaned.replace(/<part-name\s*\/>/gi, '<part-name>Music</part-name>');
+    return cleaned;
+  };
 
   useEffect(() => {
     const sid = localStorage.getItem('currentSheetSid');
 
     if (!sid) {
-      setError('악보 정보를 찾을 수 없습니다.');
+      setError('악보 ID를 찾을 수 없습니다.');
       setLoading(false);
       return;
     }
 
     const loadSheet = async () => {
       try {
-        // ✅ XML 문자열 직접 수신
         const res = await axiosInstance.get(
           `/create_sheets/mysheets/${sid}/view`,
-          {
-            responseType: 'text', // 🔥 매우 중요
-          }
+          { responseType: 'text' } // XML 문자열로 받기
         );
 
-        const xmlText = res.data;
-
-        if (!xmlText || typeof xmlText !== 'string') {
-          throw new Error('유효하지 않은 XML 데이터');
+        let rawXml = res.data;
+        if (!rawXml || typeof rawXml !== 'string') {
+          throw new Error('유효하지 않은 XML 형식입니다.');
         }
 
-        xmlText = sanitizeMusicXML(xmlText);
+        const cleanedXml = sanitizeMusicXML(rawXml);
 
-        // OSMD 인스턴스 생성 (1회)
-        if (!osmdRef.current) {
+        // OSMD 인스턴스 초기화 (한 번만)
+        if (!osmdRef.current && containerRef.current) {
           osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
             autoResize: true,
             drawTitle: true,
             drawingParameters: 'default',
+            // 여기에 원하는 옵션 추가 (예: coloring 등)
           });
         }
 
-        await osmdRef.current.load(xmlText);
+        await osmdRef.current.load(cleanedXml);
         osmdRef.current.render();
+        
       } catch (err) {
-        console.error(err);
-        setError('악보 렌더링에 실패했습니다.');
+        console.error('OSMD Error:', err);
+        setError('악보를 화면에 그리는 중 오류가 발생했습니다.');
       } finally {
         setLoading(false);
       }
     };
 
     loadSheet();
+
+    // Cleanup: 페이지 나갈 때 메모리 정리
+    return () => {
+      if (osmdRef.current) {
+        osmdRef.current.clear();
+      }
+    };
   }, []);
 
   return (
-    <div style={{ padding: '24px' }}>
-      <h2>Sheet Preview</h2>
+    <div className="sheet-viewer-page">
+      <div className="sheet-viewer-header">
+        <h2>Sheet Music Preview</h2>
+        {loading && <p>악보 데이터를 분석 중입니다...</p>}
+      </div>
 
-      {loading && <p>악보를 불러오는 중입니다...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <div ref={containerRef} />
+      {error ? (
+        <div className="sheet-error">
+          <p>{error}</p>
+          <button onClick={() => window.close()}>닫기</button>
+        </div>
+      ) : (
+        <div className="sheet-viewer-container">
+          <div ref={containerRef} style={{ width: '100%' }} />
+        </div>
+      )}
     </div>
   );
 }
