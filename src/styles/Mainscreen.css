@@ -14,8 +14,8 @@
 
 /* 메인 카드 */
 .card {
-  width: 1000px;
-  padding: 48px;
+  width: 900px;
+  padding: 30px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 28px;
   box-shadow:
