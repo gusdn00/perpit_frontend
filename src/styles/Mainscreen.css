@@ -1,98 +1,113 @@
+/* 전체 배경 */
 .mainscreen {
-  height: 82vh;
-  padding-left: 100px;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f8f9fa;
-  font-family: 'Inter', sans-serif;
-  color: #333;
+  background: linear-gradient(
+    180deg,
+    #f5f6f8 0%,
+    #ffffff 100%
+  );
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
 }
 
-.content {
-  background-color: white;
-  height: 600px;
+/* 메인 카드 */
+.card {
   width: 1000px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  padding: 48px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(20px);
 }
 
-.title {
-  height: 100px;
-  background-color: #e9ecef;
-  padding-left: 50px;
-  display: flex;
-  align-items: center;
-  font-size: 28px;
+/* 상단 */
+.header h1 {
+  font-size: 36px;
   font-weight: 700;
-  border-bottom: 1px solid #ccc;
+  margin-bottom: 8px;
 }
 
-.body {
-  flex: 1;
+.header p {
+  font-size: 16px;
+  color: #666;
+}
+
+/* 본문 */
+.main {
   display: flex;
-  flex-direction: row;
+  gap: 40px;
+  margin-top: 40px;
 }
 
-.body-left {
-  width: 50%;
-  padding: 24px;
+/* 텍스트 영역 */
+.text {
+  flex: 1;
+}
+
+.text h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.text p {
   font-size: 16px;
   line-height: 1.8;
   color: #444;
 }
 
-.body-right {
-  width: 50%;
+/* 이미지 프리뷰 */
+.preview {
+  flex: 1;
+  background: #f4f4f6;
+  border-radius: 20px;
   padding: 24px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
 }
 
-.body-sample {
-  background-color: #f1f3f5;
-  border: 1px dashed #aaa;
-  padding: 20px;
-  border-radius: 8px;
-  font-size: 16px;
-  text-align: center;
-  color: #333;
+.preview img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 12px;
 }
 
+/* 버튼 */
 .start-link {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-top: 40px;
   text-decoration: none;
 }
 
 .start-btn {
-  height: 48px;
-  width: 160px;
-  background-color: #10a37f;
-  color: white;
+  width: 180px;
+  height: 52px;
+  border-radius: 26px;
+  border: none;
   font-size: 17px;
   font-weight: 600;
-  border: none;
-  border-radius: 24px;
+  color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-bottom: 15px;
+
+  background: linear-gradient(
+    135deg,
+    #007aff,
+    #5ac8fa
+  );
+
+  box-shadow:
+    0 10px 20px rgba(0, 122, 255, 0.25);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .start-btn:hover {
-  background-color: #0d8a6b;
   transform: translateY(-2px);
-}
-
-.body-sample-img {
-  width: 100%;
-  max-height: 300px;
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
+  box-shadow:
+    0 14px 26px rgba(0, 122, 255, 0.35);
 }
