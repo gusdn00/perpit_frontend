@@ -89,8 +89,9 @@ function MySheetsPage() {
   }, []);
 
   const handleView = (link) => {
-    window.open(link, '_blank');
-  };
+  localStorage.setItem('currentSheetUrl', link);
+  window.open('/sheet-viewer', '_blank');
+};
 
   const handleDownload = (link) => {
     const a = document.createElement('a');

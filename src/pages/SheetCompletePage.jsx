@@ -62,6 +62,11 @@ function SheetCompletePage() {
     }
   };
 
+  const handleView = (link) => {
+  localStorage.setItem('currentSheetUrl', link);
+  window.open('/sheet-viewer', '_blank');
+};
+
   /* =========================
      Download (XML)
      ========================= */
@@ -122,7 +127,7 @@ function SheetCompletePage() {
             <div className="btn-group">
               <button
                 className="btn sub-btn"
-                onClick={() => window.open(result_url, '_blank')}
+                onClick={() => handleView(sheet.link)}
               >
                 View
               </button>
