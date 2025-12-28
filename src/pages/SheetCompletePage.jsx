@@ -13,6 +13,9 @@ function SheetCompletePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  /* =========================
+     악보 상세 조회
+     ========================= */
   useEffect(() => {
     if (!job_id) {
       navigate('/');
@@ -25,30 +28,53 @@ function SheetCompletePage() {
           `/create_sheets/${job_id}`
         );
         setSheetData(res.data);
-        setLoading(false);
       } catch (err) {
         console.error(err);
         alert('악보 정보를 불러오지 못했습니다.');
         navigate('/');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchSheetDetail();
-  }, []);
+  }, [job_id, navigate]);
 
-  // ⭐ Add My Sheets
+  /* =========================
+     Add My Sheets
+     ========================= */
   const handleAddMySheet = async () => {
-  try {
-    await axiosInstance.post(
-      `/create_sheets/${job_id}/add`
-    );
+    if (saving) return;
 
-    alert('내 악보에 저장되었습니다!');
-  } catch (err) {
-    console.error(err);
-    alert('내 악보 저장에 실패했습니다.');
-  }
-};
+    try {
+      setSaving(true);
+
+      await axiosInstance.post(
+        `/create_sheets/${job_id}/add`
+      );
+
+      alert('내 악보에 저장되었습니다!');
+    } catch (err) {
+      console.error(err);
+      alert('내 악보 저장에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /* =========================
+     Download (XML)
+     ========================= */
+  const handleDownload = () => {
+    if (!sheetData?.result_url) return;
+
+    const link = document.createElement('a');
+    link.href = sheetData.result_url;
+    link.download = `${sheetData.title || 'sheet'}.musicxml`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -64,6 +90,7 @@ function SheetCompletePage() {
         </h2>
 
         <div className="sheet-content">
+          {/* 미리보기 / View */}
           <div
             className="sheet-images"
             onClick={() => window.open(result_url, '_blank')}
@@ -77,6 +104,7 @@ function SheetCompletePage() {
             </div>
           </div>
 
+          {/* 정보 & 버튼 */}
           <div className="sheet-info">
             <p className="info-text">
               <b>제목 : {title}</b><br /><br />
@@ -86,7 +114,7 @@ function SheetCompletePage() {
 
             <button
               className="btn download-btn"
-              onClick={() => window.open(result_url, '_blank')}
+              onClick={handleDownload}
             >
               Download
             </button>
