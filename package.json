@@ -14,7 +14,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
-    "react-musicxml": "github:amypellegrini/react-musicxml",
     "react-router-dom": "^7.6.3",
     "recoil": "^0.7.7"
   },
