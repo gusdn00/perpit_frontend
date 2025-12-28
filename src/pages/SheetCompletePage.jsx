@@ -23,7 +23,7 @@ function SheetCompletePage() {
         const res = await axiosInstance.get(
           `/create_sheets/${job_id}`
         );
-
+        console.log(res.data)
         setSheetData(res.data);
         setLoading(false);
 
