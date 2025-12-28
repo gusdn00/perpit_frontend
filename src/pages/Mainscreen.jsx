@@ -1,9 +1,24 @@
 import React from 'react';
 import '../styles/Mainscreen.css';
 import sampleSheet from '../assets/sample.png';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { isLoggedInState } from '../authState';
 
 function Mainscreen() {
+  const navigate = useNavigate();
+  const isLoggedIn = useRecoilValue(isLoggedInState);
+
+  const handleStartClick = () => {
+    if (!isLoggedIn) {
+      alert('로그인 후 이용해주세요');
+      navigate('/login');
+      return;
+    }
+
+    navigate('/file-upload');
+  };
+
   return (
     <div className="mainscreen">
       <div className="card">
@@ -28,9 +43,11 @@ function Mainscreen() {
           </div>
         </div>
 
-        <Link to="/file-upload" className="start-link">
-          <button className="start-btn">Start</button>
-        </Link>
+        <div className="start-link">
+          <button className="start-btn" onClick={handleStartClick}>
+            Start
+          </button>
+        </div>
       </div>
     </div>
   );
