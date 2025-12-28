@@ -1,65 +1,3 @@
-// import React from 'react';
-// import { FiSearch, FiDownload, FiTrash2 } from 'react-icons/fi';
-// import { FaPlayCircle } from 'react-icons/fa'; // 재생 아이콘 추가
-// import '../styles/MySheetsPage.css';
-// import sampleSheet from '../assets/sample.png';
-
-// const dummySheets = [
-//   { id: 1, name: 'Sheet 1' },
-//   { id: 2, name: 'Sheet 2' },
-//   { id: 3, name: 'Sheet 3' },
-//   { id: 4, name: 'Sheet 4' },
-//   { id: 5, name: 'Sheet 5' },
-// ];
-
-// function MySheetsPage() {
-//   const handleView = (name) => {
-//     alert(`${name} 보기`);
-//   };
-
-//   const handleDownload = (name) => {
-//     alert(`${name} 다운로드`);
-//   };
-
-//   const handleDelete = (name) => {
-//     alert(`${name} 삭제`);
-//   };
-
-//   const handlePlay = (name) => {
-//     alert(`${name} 음악 재생 (UI만 구현됨)`);
-//   };
-
-//   return (
-//     <div className="my-sheets-screen">
-//       <div className="my-sheets-box">
-//         <h2 className="my-sheets-title">My Sheets</h2>
-
-//         <div className="sheet-list">
-//           {dummySheets.map(sheet => (
-//             <div key={sheet.id} className="sheet-card">
-//               <div className="sheet-img-wrapper" onClick={() => handlePlay(sheet.name)}>
-//                 <img src={sampleSheet} alt={sheet.name} className="sheet-card-img" />
-//                 <div className="overlay">
-//                   <FaPlayCircle size={40} className="play-icon" />
-//                 </div>
-//               </div>
-//               <p className="sheet-name">{sheet.name}</p>
-//               <div className="sheet-icons">
-//                 <button onClick={() => handleView(sheet.name)}><FiSearch size={20} /></button>
-//                 <button onClick={() => handleDownload(sheet.name)}><FiDownload size={20} /></button>
-//                 <button onClick={() => handleDelete(sheet.name)}><FiTrash2 size={20} /></button>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default MySheetsPage;
-
 import React, { useEffect, useState } from 'react';
 import { FiSearch, FiDownload, FiTrash2 } from 'react-icons/fi';
 import { FaPlayCircle } from 'react-icons/fa';
@@ -70,8 +8,11 @@ import sampleSheet from '../assets/sample.png';
 function MySheetsPage() {
   const [sheets, setSheets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingSid, setDeletingSid] = useState(null);
 
-  // 🔹 MySheets 불러오기
+  /* =========================
+     MySheets 불러오기
+     ========================= */
   useEffect(() => {
     const fetchMySheets = async () => {
       try {
@@ -88,11 +29,17 @@ function MySheetsPage() {
     fetchMySheets();
   }, []);
 
+  /* =========================
+     View
+     ========================= */
   const handleView = (link) => {
-  localStorage.setItem('currentSheetUrl', link);
-  window.open('/sheet-viewer', '_blank');
-};
+    localStorage.setItem('currentSheetUrl', link);
+    window.open('/sheet-viewer', '_blank');
+  };
 
+  /* =========================
+     Download
+     ========================= */
   const handleDownload = (link) => {
     const a = document.createElement('a');
     a.href = link;
@@ -102,11 +49,35 @@ function MySheetsPage() {
     document.body.removeChild(a);
   };
 
-  const handleDelete = (sid) => {
-    // ❗ 추후 DELETE API 연결
-    alert(`Sheet ID ${sid} 삭제 (API 연동 예정)`);
+  /* =========================
+     Delete (🔥 핵심)
+     ========================= */
+  const handleDelete = async (sid) => {
+    const confirmed = window.confirm('이 악보를 삭제하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      setDeletingSid(sid);
+
+      await axiosInstance.delete(
+        `/create_sheets/mysheets/${sid}`
+      );
+
+      // ✅ Optimistic Update
+      setSheets((prev) => prev.filter(sheet => sheet.sid !== sid));
+
+      alert('악보가 삭제되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('악보 삭제에 실패했습니다.');
+    } finally {
+      setDeletingSid(null);
+    }
   };
 
+  /* =========================
+     Play (임시)
+     ========================= */
   const handlePlay = (link) => {
     window.open(link, '_blank');
   };
@@ -146,10 +117,16 @@ function MySheetsPage() {
                   <button onClick={() => handleView(sheet.link)}>
                     <FiSearch size={20} />
                   </button>
+
                   <button onClick={() => handleDownload(sheet.link)}>
                     <FiDownload size={20} />
                   </button>
-                  <button onClick={() => handleDelete(sheet.sid)}>
+
+                  <button
+                    onClick={() => handleDelete(sheet.sid)}
+                    disabled={deletingSid === sheet.sid}
+                    title="Delete"
+                  >
                     <FiTrash2 size={20} />
                   </button>
                 </div>
@@ -163,4 +140,3 @@ function MySheetsPage() {
 }
 
 export default MySheetsPage;
-
