@@ -11,6 +11,7 @@ function SheetCompletePage() {
 
   const [sheetData, setSheetData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!job_id) {
@@ -23,10 +24,8 @@ function SheetCompletePage() {
         const res = await axiosInstance.get(
           `/create_sheets/${job_id}`
         );
-        console.log(res.data)
         setSheetData(res.data);
         setLoading(false);
-
       } catch (err) {
         console.error(err);
         alert('악보 정보를 불러오지 못했습니다.');
@@ -37,11 +36,32 @@ function SheetCompletePage() {
     fetchSheetDetail();
   }, []);
 
+  // ⭐ Add My Sheets
+  const handleAddMySheet = async () => {
+    if (saving) return;
+
+    try {
+      setSaving(true);
+
+      await axiosInstance.post('/my_sheets', {
+        job_id: job_id,
+      });
+
+      alert('내 악보에 저장되었습니다!');
+
+    } catch (err) {
+      console.error(err);
+      alert('내 악보 저장에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
-  const { title, result_url, created_at } = sheetData;
+  const { title, result_url } = sheetData;
 
   return (
     <div className="sheet-complete-screen">
@@ -59,7 +79,6 @@ function SheetCompletePage() {
               <FaPlayCircle size={50} className="play-icon" />
             </div>
 
-            {/* 지금은 미리보기 이미지 없으므로 placeholder */}
             <div className="sheet-placeholder">
               Generated Sheet
             </div>
@@ -67,9 +86,9 @@ function SheetCompletePage() {
 
           <div className="sheet-info">
             <p className="info-text">
-              <b>{title}</b><br /><br />
+              <b>제목 : {title}</b><br /><br />
               악보 생성이 완료되었습니다.<br />
-              아래 버튼을 통해 악보를 확인하거나 다운로드할 수 있습니다.
+              다운로드하거나 내 악보에 저장할 수 있습니다.
             </p>
 
             <button
@@ -86,11 +105,13 @@ function SheetCompletePage() {
               >
                 View
               </button>
+
               <button
                 className="btn sub-btn"
-                onClick={() => alert('내 악보 저장 기능은 추후 구현 예정입니다.')}
+                disabled={saving}
+                onClick={handleAddMySheet}
               >
-                Add My Sheets
+                {saving ? 'Saving...' : 'Add My Sheets'}
               </button>
             </div>
           </div>
