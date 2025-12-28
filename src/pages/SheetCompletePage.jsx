@@ -44,10 +44,9 @@ function SheetCompletePage() {
      View (MusicXML Viewer)
      ========================= */
   const handleView = (link) => {
-    if (!link) return;
-    localStorage.setItem('currentSheetUrl', link);
-    window.open('/sheet-viewer', '_blank');
-  };
+  localStorage.setItem('currentSheetUrl', link);
+  window.open('/sheet-viewer', '_blank');
+};
 
   /* =========================
      Download (XML)
