@@ -22,7 +22,7 @@ export default function Sidebar() {
         <div className="sidebar-content">
           <div className="sidebar-main">
             <div className="nickname">
-              {isLoggedIn ? 'nickname' : 'Guest'}
+              {isLoggedIn ? '' : 'Please Login'}
             </div>
 
             {isLoggedIn ? (
