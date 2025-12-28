@@ -1,89 +1,68 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import '../styles/SheetViewerPage.css';
 
 function SheetViewerPage() {
   const containerRef = useRef(null);
-  const [error, setError] = useState(null);
+  const osmdRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const sheetUrl = localStorage.getItem('currentSheetUrl');
+    const viewUrl = localStorage.getItem('currentSheetUrl');
 
-    if (!sheetUrl) {
-      setError('악보 정보를 찾을 수 없습니다.');
+    if (!viewUrl) {
+      setError('악보 링크가 없습니다.');
       setLoading(false);
       return;
     }
 
-    let osmd = null;
-    let cancelled = false;
-
     const loadSheet = async () => {
       try {
-        // 🔥 Lazy Import (빌드 안정화 핵심)
-        const mod = await import('opensheetmusicdisplay');
-        const OpenSheetMusicDisplay = mod.OpenSheetMusicDisplay;
+        // 🔥 핵심: XML 직접 fetch
+        const res = await fetch(viewUrl);
+        if (!res.ok) {
+          throw new Error('악보 파일을 불러오지 못했습니다.');
+        }
 
-        if (cancelled || !containerRef.current) return;
+        const xmlText = await res.text();
 
-        osmd = new OpenSheetMusicDisplay(containerRef.current, {
-          autoResize: true,
-          backend: 'svg',       // canvas보다 안정적
-          drawTitle: true,
-          drawComposer: true,
-        });
+        // OSMD 인스턴스 생성
+        osmdRef.current = new OpenSheetMusicDisplay(
+          containerRef.current,
+          {
+            autoResize: true,
+            drawTitle: true,
+            backend: 'svg',
+          }
+        );
 
-        await osmd.load(sheetUrl);
-        if (cancelled) return;
+        // 🔥 XML 문자열을 로드
+        await osmdRef.current.load(xmlText);
+        osmdRef.current.render();
 
-        osmd.render();
       } catch (err) {
         console.error(err);
-        setError('악보를 불러오는 중 오류가 발생했습니다.');
+        setError('악보를 렌더링하는 데 실패했습니다.');
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
     };
 
     loadSheet();
-
-    return () => {
-      cancelled = true;
-      if (osmd) {
-        try {
-          osmd.clear();
-        } catch (e) {
-          // noop
-        }
-      }
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-      }
-    };
   }, []);
 
   if (loading) {
-    return (
-      <div className="sheet-viewer-loading">
-        Loading sheet…
-      </div>
-    );
+    return <div className="sheet-viewer-loading">Loading sheet...</div>;
   }
 
   if (error) {
-    return (
-      <div className="sheet-viewer-error">
-        {error}
-      </div>
-    );
+    return <div className="sheet-viewer-error">{error}</div>;
   }
 
   return (
     <div className="sheet-viewer-page">
-      <div className="sheet-viewer-header">
-        <h2>Sheet Preview</h2>
-      </div>
-
+      <h2 className="viewer-title">Sheet Preview</h2>
       <div
         ref={containerRef}
         className="sheet-viewer-container"
