@@ -7,6 +7,24 @@ function SheetViewerPage() {
   const osmdRef = useRef(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const sanitizeMusicXML = (xml) => {
+  let cleaned = xml;
+
+  // 1️⃣ DOCTYPE 제거 (가장 중요)
+  cleaned = cleaned.replace(/<!DOCTYPE[^>]*>/gi, '');
+
+  // 2️⃣ XML 선언 앞뒤 공백 제거
+  cleaned = cleaned.trim();
+
+  // 3️⃣ 빈 part-name 보정
+  cleaned = cleaned.replace(
+    /<part-name\s*\/>/gi,
+    '<part-name>Music</part-name>'
+  );
+
+  return cleaned;
+};
 
   useEffect(() => {
     const sid = localStorage.getItem('currentSheetSid');
@@ -32,6 +50,8 @@ function SheetViewerPage() {
         if (!xmlText || typeof xmlText !== 'string') {
           throw new Error('유효하지 않은 XML 데이터');
         }
+
+        xmlText = sanitizeMusicXML(xmlText);
 
         // OSMD 인스턴스 생성 (1회)
         if (!osmdRef.current) {
