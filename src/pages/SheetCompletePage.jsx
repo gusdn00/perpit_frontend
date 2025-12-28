@@ -12,6 +12,7 @@ function SheetCompletePage() {
   const [sheetData, setSheetData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
 
   /* =========================
      악보 상세 조회
@@ -41,15 +42,36 @@ function SheetCompletePage() {
   }, [job_id, navigate]);
 
   /* =========================
-     View (MusicXML Viewer)
+     View (🔥 view용 링크 재발급)
      ========================= */
-  const handleView = (link) => {
-  localStorage.setItem('currentSheetUrl', link);
-  window.open('/sheet-viewer', '_blank');
-};
+  const handleView = async () => {
+    if (viewLoading) return;
+
+    try {
+      setViewLoading(true);
+
+      const res = await axiosInstance.get(
+        `/create_sheets/${job_id}/view`
+      );
+
+      const { view_url } = res.data;
+      if (!view_url) {
+        alert('미리보기 링크를 받지 못했습니다.');
+        return;
+      }
+
+      localStorage.setItem('currentSheetUrl', view_url);
+      window.open('/sheet-viewer', '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('미리보기를 불러오지 못했습니다.');
+    } finally {
+      setViewLoading(false);
+    }
+  };
 
   /* =========================
-     Download (XML)
+     Download (기존 download 링크 사용)
      ========================= */
   const handleDownload = () => {
     if (!sheetData?.result_url) return;
@@ -86,7 +108,7 @@ function SheetCompletePage() {
     return <div className="loading">Loading...</div>;
   }
 
-  const { title, result_url } = sheetData;
+  const { title } = sheetData;
 
   return (
     <div className="sheet-complete-screen">
@@ -96,12 +118,10 @@ function SheetCompletePage() {
         </h2>
 
         <div className="sheet-content">
-          {/* =========================
-              미리보기 (View)
-             ========================= */}
+          {/* 미리보기 */}
           <div
             className="sheet-images"
-            onClick={() => handleView(result_url)}
+            onClick={handleView}
           >
             <div className="overlay">
               <FaPlayCircle size={50} className="play-icon" />
@@ -112,9 +132,7 @@ function SheetCompletePage() {
             </div>
           </div>
 
-          {/* =========================
-              정보 & 버튼
-             ========================= */}
+          {/* 정보 & 버튼 */}
           <div className="sheet-info">
             <p className="info-text">
               <b>제목 : {title}</b><br /><br />
@@ -132,9 +150,10 @@ function SheetCompletePage() {
             <div className="btn-group">
               <button
                 className="btn sub-btn"
-                onClick={() => handleView(result_url)}
+                onClick={handleView}
+                disabled={viewLoading}
               >
-                View
+                {viewLoading ? 'Loading...' : 'View'}
               </button>
 
               <button

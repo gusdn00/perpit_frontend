@@ -9,6 +9,7 @@ function MySheetsPage() {
   const [sheets, setSheets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingSid, setDeletingSid] = useState(null);
+  const [viewingSid, setViewingSid] = useState(null);
 
   /* =========================
      MySheets 불러오기
@@ -30,15 +31,36 @@ function MySheetsPage() {
   }, []);
 
   /* =========================
-     View
+     View (🔥 view 링크 재발급)
      ========================= */
-  const handleView = (link) => {
-    localStorage.setItem('currentSheetUrl', link);
-    window.open('/sheet-viewer', '_blank');
+  const handleView = async (sid) => {
+    if (viewingSid) return;
+
+    try {
+      setViewingSid(sid);
+
+      const res = await axiosInstance.get(
+        `/create_sheets/mysheets/${sid}/view`
+      );
+
+      const { view_url } = res.data;
+      if (!view_url) {
+        alert('미리보기 링크를 받지 못했습니다.');
+        return;
+      }
+
+      localStorage.setItem('currentSheetUrl', view_url);
+      window.open('/sheet-viewer', '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('미리보기를 불러오지 못했습니다.');
+    } finally {
+      setViewingSid(null);
+    }
   };
 
   /* =========================
-     Download
+     Download (기존 link)
      ========================= */
   const handleDownload = (link) => {
     const a = document.createElement('a');
@@ -50,7 +72,7 @@ function MySheetsPage() {
   };
 
   /* =========================
-     Delete (🔥 핵심)
+     Delete
      ========================= */
   const handleDelete = async (sid) => {
     const confirmed = window.confirm('이 악보를 삭제하시겠습니까?');
@@ -63,9 +85,7 @@ function MySheetsPage() {
         `/create_sheets/mysheets/${sid}`
       );
 
-      // ✅ Optimistic Update
-      setSheets((prev) => prev.filter(sheet => sheet.sid !== sid));
-
+      setSheets(prev => prev.filter(sheet => sheet.sid !== sid));
       alert('악보가 삭제되었습니다.');
     } catch (err) {
       console.error(err);
@@ -73,13 +93,6 @@ function MySheetsPage() {
     } finally {
       setDeletingSid(null);
     }
-  };
-
-  /* =========================
-     Play (임시)
-     ========================= */
-  const handlePlay = (link) => {
-    window.open(link, '_blank');
   };
 
   if (loading) {
@@ -95,11 +108,11 @@ function MySheetsPage() {
           <p className="empty-text">저장된 악보가 없습니다.</p>
         ) : (
           <div className="sheet-list">
-            {sheets.map((sheet) => (
+            {sheets.map(sheet => (
               <div key={sheet.sid} className="sheet-card">
                 <div
                   className="sheet-img-wrapper"
-                  onClick={() => handlePlay(sheet.link)}
+                  onClick={() => handleView(sheet.sid)}
                 >
                   <img
                     src={sampleSheet}
@@ -114,7 +127,7 @@ function MySheetsPage() {
                 <p className="sheet-name">{sheet.name}</p>
 
                 <div className="sheet-icons">
-                  <button onClick={() => handleView(sheet.link)}>
+                  <button onClick={() => handleView(sheet.sid)}>
                     <FiSearch size={20} />
                   </button>
 
@@ -125,7 +138,6 @@ function MySheetsPage() {
                   <button
                     onClick={() => handleDelete(sheet.sid)}
                     disabled={deletingSid === sheet.sid}
-                    title="Delete"
                   >
                     <FiTrash2 size={20} />
                   </button>
