@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import MusicXMLViewer from '../components/MusicXMLViewer';
+import MusicXMLViewer from './MusicXMLViewer.jsx';
 
 function SheetViewerPage() {
   const { state } = useLocation();
