@@ -43,10 +43,10 @@ function SheetCompletePage() {
     try {
       setSaving(true);
 
-      await axiosInstance.post('/my_sheets', {
+      await axiosInstance.post('/create_sheets/{job_id}/add', {
         job_id: job_id,
       });
-
+      
       alert('내 악보에 저장되었습니다!');
 
     } catch (err) {
