@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import '../styles/SheetCompletePage.css';
 import { FaPlayCircle } from 'react-icons/fa';
+import sampleSheet from '../assets/sample.png';
 
 function SheetCompletePage() {
   const navigate = useNavigate();
@@ -45,25 +46,29 @@ function SheetCompletePage() {
      View (🔥 view용 링크 재발급)
      ========================= */
   const handleView = async () => {
-  try {
-    const res = await axiosInstance.get(
-      `/create_sheets/${job_id}/view`
-    );
+    if (viewLoading) return;
 
-    const { view_url } = res.data;
+    try {
+      setViewLoading(true);
 
-    
-    localStorage.setItem('currentSheetViewUrl', view_url);
-    window.open('/sheet-viewer', '_blank');
-  } catch (err) {
-    console.error(err);
-    alert('미리보기 링크를 가져오지 못했습니다.');
-  }
-};
+      const res = await axiosInstance.get(
+        `/create_sheets/${job_id}/view`
+      );
 
+      const { view_url } = res.data;
+
+      localStorage.setItem('currentSheetViewUrl', view_url);
+      window.open('/sheet-viewer', '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('미리보기 링크를 가져오지 못했습니다.');
+    } finally {
+      setViewLoading(false);
+    }
+  };
 
   /* =========================
-     Download (기존 download 링크 사용)
+     Download (기존 download 링크)
      ========================= */
   const handleDownload = () => {
     if (!sheetData?.result_url) return;
@@ -110,21 +115,37 @@ function SheetCompletePage() {
         </h2>
 
         <div className="sheet-content">
-          {/* 미리보기 */}
+          {/* =========================
+              미리보기 (블러 썸네일)
+             ========================= */}
           <div
             className="sheet-images"
             onClick={handleView}
           >
+            <img
+              src={sampleSheet}
+              alt="sheet-back"
+              className="sheet-img sheet-img-back"
+            />
+            <img
+              src={sampleSheet}
+              alt="sheet-middle"
+              className="sheet-img sheet-img-middle"
+            />
+            <img
+              src={sampleSheet}
+              alt="sheet-front"
+              className="sheet-img sheet-img-front"
+            />
+
             <div className="overlay">
               <FaPlayCircle size={50} className="play-icon" />
             </div>
-
-            <div className="sheet-placeholder">
-              Generated Sheet
-            </div>
           </div>
 
-          {/* 정보 & 버튼 */}
+          {/* =========================
+              정보 & 버튼
+             ========================= */}
           <div className="sheet-info">
             <p className="info-text">
               <b>제목 : {title}</b><br /><br />

@@ -32,6 +32,9 @@
   gap: 50px;
 }
 
+/* =========================
+   Sheet Preview (Blur)
+   ========================= */
 .sheet-images {
   position: relative;
   width: 180px;
@@ -46,12 +49,30 @@
   position: absolute;
   border: 1px solid #ccc;
   border-radius: 8px;
+  opacity: 0.85;
   transition: all 0.3s ease;
 }
 
-.sheet-img-back { top: 8px; left: 8px; opacity: 0.6; }
-.sheet-img-middle { top: 4px; left: 4px; opacity: 0.8; }
-.sheet-img-front { top: 0; left: 0; opacity: 1; }
+.sheet-img-back {
+  top: 8px;
+  left: 8px;
+  opacity: 0.4;
+  filter: blur(4px);
+}
+
+.sheet-img-middle {
+  top: 4px;
+  left: 4px;
+  opacity: 0.6;
+  filter: blur(3px);
+}
+
+.sheet-img-front {
+  top: 0;
+  left: 0;
+  opacity: 0.9;
+  filter: blur(1.5px);
+}
 
 /* Overlay */
 .overlay {
@@ -83,7 +104,13 @@
   opacity: 1;
 }
 
+.sheet-images:hover .sheet-img {
+  filter: blur(1px);
+}
 
+/* =========================
+   Info & Buttons
+   ========================= */
 .sheet-info {
   max-width: 400px;
 }
