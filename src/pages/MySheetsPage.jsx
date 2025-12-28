@@ -75,7 +75,7 @@ function MySheetsPage() {
   useEffect(() => {
     const fetchMySheets = async () => {
       try {
-        const res = await axiosInstance.get('/mysheets');
+        const res = await axiosInstance.get('/create_sheets/mysheets');
         setSheets(res.data.data);
       } catch (err) {
         console.error(err);
