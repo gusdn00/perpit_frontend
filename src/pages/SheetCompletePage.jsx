@@ -49,11 +49,11 @@ function SheetCompletePage() {
     try {
       setSaving(true);
 
-      await axiosInstance.post(
+      const res = await axiosInstance.post(
         `/create_sheets/${job_id}/add`
       );
 
-      alert('내 악보에 저장되었습니다!');
+      alert(res.data.message);
     } catch (err) {
       console.error(err);
       alert('내 악보 저장에 실패했습니다.');
