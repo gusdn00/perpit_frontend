@@ -8,19 +8,19 @@ import { useRecoilState } from 'recoil';
 function Header() {
   const navigate = useNavigate();
 
-  // ✅ 먼저 선언
+  
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
 
-  // ✅ 그 다음 사용
+  
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("Token");
     if (token) {
       setIsLoggedIn(true);
     }
   }, [setIsLoggedIn]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("Token");
     setIsLoggedIn(false);
     navigate('/');
   };
