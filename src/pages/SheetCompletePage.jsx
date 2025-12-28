@@ -38,24 +38,17 @@ function SheetCompletePage() {
 
   // ⭐ Add My Sheets
   const handleAddMySheet = async () => {
-    if (saving) return;
+  try {
+    await axiosInstance.post(
+      `/create_sheets/${job_id}/add`
+    );
 
-    try {
-      setSaving(true);
-
-      await axiosInstance.post('/create_sheets/{job_id}/add', {
-        job_id: job_id,
-      });
-      
-      alert('내 악보에 저장되었습니다!');
-
-    } catch (err) {
-      console.error(err);
-      alert('내 악보 저장에 실패했습니다.');
-    } finally {
-      setSaving(false);
-    }
-  };
+    alert('내 악보에 저장되었습니다!');
+  } catch (err) {
+    console.error(err);
+    alert('내 악보 저장에 실패했습니다.');
+  }
+};
 
   if (loading) {
     return <div className="loading">Loading...</div>;
