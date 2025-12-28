@@ -13,8 +13,8 @@ function Mypage() {
     const fetchProfile = async () => {
       try {
         const res = await axiosInstance.get('/auth/profile');
-        console.log(res.data);
-        setProfile(res.data);
+        // ✅ 실제 데이터는 res.data.data
+        setProfile(res.data.data);
       } catch (err) {
         console.error(err);
         alert('프로필 정보를 불러오지 못했습니다.');
@@ -34,7 +34,7 @@ function Mypage() {
     return <div className="profile-screen">프로필 정보가 없습니다.</div>;
   }
 
-  const { nickname, user_id, email } = profile;
+  const { name, user_id, email } = profile;
 
   return (
     <div className="profile-screen">
@@ -43,8 +43,8 @@ function Mypage() {
 
         <div className="profile-info">
           <div className="profile-row">
-            <span className="label">Nick Name</span>
-            <span className="value">{nickname}</span>
+            <span className="label">Name</span>
+            <span className="value">{name}</span>
           </div>
 
           <div className="profile-row">
