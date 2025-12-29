@@ -1,78 +1,96 @@
-/* 레이아웃 핵심: 헤더와 사이드바를 제외한 나머지 영역만 차지하도록 */
+/* 페이지 전체 컨테이너 */
 .sheet-viewer-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px); /* 헤더 높이가 60px라고 가정 */
-  background-color: #f4f7f9;
+  /* 상단 내비게이션 바 높이만큼 제외 (본인 프로젝트 헤더 높이에 맞게 조절) */
+  height: calc(100vh - 80px); 
+  background-color: #f0f2f5;
   overflow: hidden;
 }
 
-/* 컨트롤러 디자인 */
+/* 컨트롤 바: 깔끔한 화이트 톤과 확실한 버튼 디자인 */
 .player-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  z-index: 10;
+  padding: 10px 40px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  height: 70px;
+  box-sizing: border-box;
 }
 
+/* 재생 버튼: 입체감 있는 녹색 */
 .btn-main {
-  background: #2ecc71;
+  background: #00c853;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 50px;
-  font-weight: 800;
+  padding: 10px 25px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-  margin-right: 10px;
+  box-shadow: 0 3px 0 #009624; /* 버튼 느낌의 하단 그림자 */
+  transition: all 0.1s;
+  margin-right: 12px;
 }
 
-.btn-main.pause { background: #e67e22; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3); }
-.btn-main:hover { transform: translateY(-2px); }
+.btn-main:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #009624;
+}
 
+.btn-main.pause {
+  background: #ff9100;
+  box-shadow: 0 3px 0 #c67100;
+}
+
+/* 보조 버튼: 깔끔한 그레이 */
 .btn-sub {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  padding: 10px 20px;
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d1d1d1;
+  padding: 9px 18px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   margin-right: 8px;
-  transition: all 0.2s;
+  color: #444;
 }
 
-.btn-sub:hover { background: #e9ecef; }
+.btn-sub:hover {
+  background: #f5f5f5;
+}
 
-/* 악보 뷰어 영역 */
+/* 악보가 들어가는 메인 영역 (사이드바 오른쪽 부분) */
 .sheet-main-content {
   flex: 1;
-  overflow-y: auto; /* 악보가 길어지면 내부 스크롤 */
-  padding: 40px;
+  overflow-y: auto; /* 악보가 길면 여기서 스크롤 */
+  padding: 30px;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
+/* 악보 종이 느낌의 컨테이너 */
 .osmd-container-wrapper {
-  background: white;
+  background: #ffffff;
   width: 100%;
-  max-width: 1000px;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  min-height: 800px;
+  max-width: 900px; /* 악보 너비 제한 */
+  padding: 50px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  min-height: 1000px;
+}
+
+.osmd-canvas-container {
+  width: 100%;
 }
 
 .info-badge {
-  background: #e1f5fe;
-  color: #0288d1;
-  padding: 5px 15px;
-  border-radius: 20px;
   font-size: 12px;
-  font-weight: bold;
+  color: #007bff;
+  background: #e7f3ff;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-weight: 600;
 }
-
-/* 로딩 스피너 등 생략... */

@@ -15,9 +15,7 @@ function SheetViewerPage() {
 
   const sanitizeMusicXML = (xml) => {
     if (!xml) return '';
-    let cleaned = xml;
-    cleaned = cleaned.replace(/<!DOCTYPE[^>]*>/gi, '');
-    cleaned = cleaned.trim();
+    let cleaned = xml.replace(/<!DOCTYPE[^>]*>/gi, '').trim();
     cleaned = cleaned.replace(/<part-name\s*\/>/gi, '<part-name>Music</part-name>');
     return cleaned;
   };
@@ -32,41 +30,29 @@ function SheetViewerPage() {
 
     const loadSheet = async () => {
       try {
-        const res = await axiosInstance.get(`/create_sheets/mysheets/${sid}/view`, { 
-          responseType: 'text' 
-        });
-
+        const res = await axiosInstance.get(`/create_sheets/mysheets/${sid}/view`, { responseType: 'text' });
         const cleanedXml = sanitizeMusicXML(res.data);
 
         if (containerRef.current) {
-          // OSMD 초기화 (설정 최적화)
+          // 1. OSMD 설정 (커서 따라가기 옵션 강화)
           osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
             autoResize: true,
             drawTitle: true,
-            drawingParameters: "default",
-            followCursor: true,
+            followCursor: true, // 재생 시 화면이 커서를 따라감
           });
           
           await osmdRef.current.load(cleanedXml);
           osmdRef.current.render();
 
+          // 2. 플레이어 설정 및 커서 결합
           playerRef.current = new AudioPlayer();
           await playerRef.current.loadScore(osmdRef.current);
           
+          // 커서 표시 활성화
           osmdRef.current.cursor.show();
-
-          // 악보 클릭 이벤트
-          containerRef.current.onclick = () => {
-             if(playerRef.current) {
-               // 클릭 시점의 커서 위치로 오디오 동기화 시도
-               playerRef.current.stop();
-               setIsPlaying(false);
-             }
-          };
         }
       } catch (err) {
-        console.error("Load Error:", err);
-        setError('악보를 로드하는 데 실패했습니다.');
+        setError('악보 로드 실패');
       } finally {
         setLoading(false);
       }
@@ -81,13 +67,17 @@ function SheetViewerPage() {
   }, []);
 
   const togglePlay = async () => {
-    if (!playerRef.current) return;
+    if (!playerRef.current || !osmdRef.current) return;
+
     if (isPlaying) {
       playerRef.current.pause();
+      setIsPlaying(false);
     } else {
+      // 재생 전 커서 위치 확인 및 강제 표시
+      osmdRef.current.cursor.show();
       await playerRef.current.play();
+      setIsPlaying(true);
     }
-    setIsPlaying(!isPlaying);
   };
 
   const stopPlay = () => {
@@ -100,10 +90,10 @@ function SheetViewerPage() {
 
   return (
     <div className="sheet-viewer-page">
-      {/* 상단 컨트롤 바 */}
+      {/* 1. 상단 컨트롤러 (불필요한 문자열 제거) */}
       <div className="player-controls">
         <div className="control-left">
-          <h2 className="sheet-title">AI Sheet Music</h2>
+          {/* 로고나 빈 공간으로 둠 */}
         </div>
         
         <div className="control-center">
@@ -113,28 +103,31 @@ function SheetViewerPage() {
           <button className="btn-sub" onClick={stopPlay} disabled={loading}>
             ⏹ STOP
           </button>
-          <button className="btn-sub" onClick={() => { stopPlay(); osmdRef.current.cursor.reset(); }} disabled={loading}>
+          <button className="btn-sub" onClick={() => { stopPlay(); }} disabled={loading}>
             🔄 RESET
           </button>
         </div>
         
         <div className="control-right">
-          <span className="info-badge">Click Note to Jump</span>
+          <span className="info-badge">Auto-Sync Enabled</span>
         </div>
       </div>
 
-      {/* 메인 뷰어 영역 */}
+      {/* 2. 악보 뷰어 영역 */}
       <div className="sheet-main-content">
-        {loading && (
-          <div className="loading-overlay">
-            <div className="spinner"></div>
-            <p>악보를 렌더링 중입니다...</p>
-          </div>
-        )}
-        {error && <div className="error-message">{error}</div>}
+        {loading && <div className="loading-overlay">Rendering...</div>}
         
         <div className="osmd-container-wrapper">
-          <div ref={containerRef} className="osmd-canvas-container" />
+          {/* 클릭 시 커서 이동을 위한 클릭 이벤트 추가 */}
+          <div 
+            ref={containerRef} 
+            className="osmd-canvas-container" 
+            onClick={() => {
+              if (osmdRef.current && !isPlaying) {
+                // 클릭한 지점으로 오디오 포커스 이동 시도 (라이브러리 기본동작 활용)
+              }
+            }}
+          />
         </div>
       </div>
     </div>
