@@ -34,24 +34,29 @@ function SheetViewerPage() {
         const cleanedXml = sanitizeMusicXML(res.data);
 
         if (containerRef.current) {
-          // 1. OSMD 설정 (커서 따라가기 옵션 강화)
           osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
             autoResize: true,
             drawTitle: true,
-            followCursor: true, // 재생 시 화면이 커서를 따라감
+            followCursor: true, // 커서가 화면 밖으로 나가면 자동 스크롤
           });
           
           await osmdRef.current.load(cleanedXml);
           osmdRef.current.render();
 
-          // 2. 플레이어 설정 및 커서 결합
           playerRef.current = new AudioPlayer();
           await playerRef.current.loadScore(osmdRef.current);
           
-          // 커서 표시 활성화
+          // [핵심] 오디오 재생 지점에 맞춰 커서를 이동시키는 이벤트 리스너
+          playerRef.current.on('iteration', (notes) => {
+            if (osmdRef.current && osmdRef.current.cursor) {
+              osmdRef.current.cursor.next(); // 오디오 신호에 맞춰 커서 한 칸 전진
+            }
+          });
+
           osmdRef.current.cursor.show();
         }
       } catch (err) {
+        console.error(err);
         setError('악보 로드 실패');
       } finally {
         setLoading(false);
@@ -73,7 +78,10 @@ function SheetViewerPage() {
       playerRef.current.pause();
       setIsPlaying(false);
     } else {
-      // 재생 전 커서 위치 확인 및 강제 표시
+      // 재생 시작 시 커서가 끝에 있다면 리셋
+      if (osmdRef.current.cursor.iterator.EndReached) {
+        osmdRef.current.cursor.reset();
+      }
       osmdRef.current.cursor.show();
       await playerRef.current.play();
       setIsPlaying(true);
@@ -90,44 +98,27 @@ function SheetViewerPage() {
 
   return (
     <div className="sheet-viewer-page">
-      {/* 1. 상단 컨트롤러 (불필요한 문자열 제거) */}
       <div className="player-controls">
-        <div className="control-left">
-          {/* 로고나 빈 공간으로 둠 */}
-        </div>
-        
+        <div className="control-left"></div>
         <div className="control-center">
           <button className={`btn-main ${isPlaying ? 'pause' : 'play'}`} onClick={togglePlay} disabled={loading}>
-            {isPlaying ? '⏸ PAUSE' : '▶ PLAY'}
+            {isPlaying ? '⏸ 일시정지' : '▶ 재생하기'}
           </button>
           <button className="btn-sub" onClick={stopPlay} disabled={loading}>
-            ⏹ STOP
+            ⏹ 정지
           </button>
           <button className="btn-sub" onClick={() => { stopPlay(); }} disabled={loading}>
-            🔄 RESET
+            🔄 처음으로
           </button>
         </div>
-        
         <div className="control-right">
-          <span className="info-badge">Auto-Sync Enabled</span>
+          <span className="info-badge">Auto-Syncing...</span>
         </div>
       </div>
 
-      {/* 2. 악보 뷰어 영역 */}
       <div className="sheet-main-content">
-        {loading && <div className="loading-overlay">Rendering...</div>}
-        
         <div className="osmd-container-wrapper">
-          {/* 클릭 시 커서 이동을 위한 클릭 이벤트 추가 */}
-          <div 
-            ref={containerRef} 
-            className="osmd-canvas-container" 
-            onClick={() => {
-              if (osmdRef.current && !isPlaying) {
-                // 클릭한 지점으로 오디오 포커스 이동 시도 (라이브러리 기본동작 활용)
-              }
-            }}
-          />
+          <div ref={containerRef} className="osmd-canvas-container" />
         </div>
       </div>
     </div>
