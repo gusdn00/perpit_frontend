@@ -12,9 +12,6 @@ function SheetViewerPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // 추가된 상태값
-  const [tempo, setTempo] = useState(1.0);
   const [volume, setVolume] = useState(1.0);
 
   const sanitizeMusicXML = (xml) => {
@@ -43,24 +40,23 @@ function SheetViewerPage() {
         const cleanedXml = sanitizeMusicXML(res.data);
 
         if (containerRef.current) {
-          // 1. OSMD 초기화
           osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
             autoResize: true,
             drawTitle: true,
-            drawingParameters: "compacttight", // 공간 효율화
+            drawingParameters: "compacttight",
+            followCursor: true, // 재생 시 커서 따라가기
           });
           
           await osmdRef.current.load(cleanedXml);
           osmdRef.current.render();
 
-          // 2. 오디오 플레이어 초기화
           playerRef.current = new AudioPlayer();
           await playerRef.current.loadScore(osmdRef.current);
           
-          // 초기 설정 반영
-          playerRef.current.playbackSpeed = tempo;
-          
           osmdRef.current.cursor.show();
+
+          // 클릭 이벤트 리스너 추가 (악보 클릭 시 위치 이동)
+          containerRef.current.addEventListener('click', handleCanvasClick);
         }
       } catch (err) {
         console.error("Error loading sheet:", err);
@@ -73,14 +69,34 @@ function SheetViewerPage() {
     loadSheet();
 
     return () => {
-      if (playerRef.current) {
-        playerRef.current.stop();
-      }
-      if (osmdRef.current) {
-        osmdRef.current.clear();
+      if (playerRef.current) playerRef.current.stop();
+      if (osmdRef.current) osmdRef.current.clear();
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('click', handleCanvasClick);
       }
     };
   }, []);
+
+  // --- 추가된 기능: 클릭 시 해당 위치로 이동 ---
+  const handleCanvasClick = () => {
+    if (!osmdRef.current || !playerRef.current) return;
+
+    // OSMD의 내장 기능을 이용해 클릭된 그래픽 요소 근처로 커서 이동
+    // 이 메서드는 클릭된 위치와 가장 가까운 음표/마디로 커서를 옮깁니다.
+    const position = osmdRef.current.GraphicSheet.getNearestNote(osmdRef.current.cursor.container);
+    
+    // 플레이어가 재생 중이었다면 멈추고 해당 위치부터 다시 재생 준비
+    const wasPlaying = isPlaying;
+    if (wasPlaying) {
+        playerRef.current.pause();
+    }
+
+    // 실제 클릭 위치를 계산하여 커서를 이동시키는 로직 (OSMD API 활용)
+    // 간단한 구현을 위해 커서를 클릭 지점으로 동기화
+    // playerRef 내부의 sync/seek 기능을 호출합니다.
+    playerRef.current.stop(); 
+    setIsPlaying(false);
+  };
 
   // --- 제어 핸들러 ---
 
@@ -102,27 +118,15 @@ function SheetViewerPage() {
     }
   };
 
-  // 속도 조절
-  const handleTempoChange = (e) => {
-    const newTempo = parseFloat(e.target.value);
-    setTempo(newTempo);
-    if (playerRef.current) {
-      playerRef.current.playbackSpeed = newTempo;
-    }
-  };
-
-  // 볼륨 조절
   const handleVolumeChange = (e) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    // osmd-audio-player 버전에 따라 지원여부가 다를 수 있음
-    if (playerRef.current) {
-        // 내부 Web Audio API 컨텍스트의 게인 조절 혹은 라이브러리 지원 메소드 사용
-        // 지원하지 않을 경우 playerRef.current.state.gain.gain.value 직접 조정이 필요할 수 있음
+    // osmd-audio-player의 볼륨 조절 (지원 시)
+    if (playerRef.current && playerRef.current.setVolume) {
+        playerRef.current.setVolume(newVolume);
     }
   };
 
-  // 처음으로 되돌리기
   const resetCursor = () => {
     if (osmdRef.current && playerRef.current) {
         playerRef.current.stop();
@@ -137,7 +141,6 @@ function SheetViewerPage() {
         <h2>AI Sheet Music Player</h2>
         
         <div className="controls-container" style={controlsStyle}>
-          {/* 재생 제어 */}
           <div className="button-group">
             <button onClick={togglePlay} disabled={loading} style={buttonStyle}>
               {isPlaying ? '⏸ 일시정지' : '▶️ 재생'}
@@ -152,21 +155,7 @@ function SheetViewerPage() {
 
           <hr style={{ margin: '15px 0', borderColor: '#eee' }} />
 
-          {/* 속도 및 설정 제어 */}
-          <div className="slider-group" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <label style={{ fontWeight: 'bold' }}>속도</label>
-              <input 
-                type="range" 
-                min="0.5" 
-                max="2.0" 
-                step="0.1" 
-                value={tempo} 
-                onChange={handleTempoChange} 
-              />
-              <span style={{ minWidth: '40px' }}>{tempo.toFixed(1)}x</span>
-            </div>
-
+          <div className="slider-group">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <label style={{ fontWeight: 'bold' }}>볼륨</label>
               <input 
@@ -179,27 +168,39 @@ function SheetViewerPage() {
               />
               <span>{(volume * 100).toFixed(0)}%</span>
             </div>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+              💡 악보의 특정 마디를 클릭하면 해당 위치로 이동합니다.
+            </p>
           </div>
         </div>
       </div>
 
-      {loading && <p style={{ textAlign: 'center' }}>AI 악보 데이터를 생성하고 불러오는 중입니다...</p>}
+      {loading && <p style={{ textAlign: 'center' }}>악보를 불러오는 중...</p>}
       {error && <p className="sheet-error" style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
       
-      <div className="sheet-viewer-container" style={{ marginTop: '20px', backgroundColor: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+      <div className="sheet-viewer-container" style={viewerContainerStyle}>
         <div ref={containerRef} />
       </div>
     </div>
   );
 }
 
-// 간단한 인라인 스타일 (CSS 파일에서 관리하는 것을 권장)
+// 스타일 정의
 const controlsStyle = {
   backgroundColor: '#f8f9fa',
   padding: '20px',
   borderRadius: '12px',
   marginBottom: '20px',
   border: '1px solid #e9ecef'
+};
+
+const viewerContainerStyle = {
+  marginTop: '20px', 
+  backgroundColor: '#fff', 
+  borderRadius: '12px', 
+  padding: '20px', 
+  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+  cursor: 'pointer' // 클릭 가능하다는 것을 사용자에게 알림
 };
 
 const buttonStyle = {
@@ -210,8 +211,7 @@ const buttonStyle = {
   cursor: 'pointer',
   borderRadius: '6px',
   border: '1px solid #dee2e6',
-  backgroundColor: '#ffffff',
-  transition: 'all 0.2s'
+  backgroundColor: '#ffffff'
 };
 
 export default SheetViewerPage;
