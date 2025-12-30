@@ -37,7 +37,9 @@ function SheetViewerPage() {
           osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
             autoResize: true,
             drawTitle: true,
-            followCursor: true, // 커서가 화면 밖으로 나가면 자동 스크롤
+            // 1. 자유로운 스크롤을 위해 followCursor를 false로 설정합니다.
+            followCursor: false, 
+            drawingParameters: "default",
           });
           
           await osmdRef.current.load(cleanedXml);
@@ -46,17 +48,15 @@ function SheetViewerPage() {
           playerRef.current = new AudioPlayer();
           await playerRef.current.loadScore(osmdRef.current);
           
-          // [핵심] 오디오 재생 지점에 맞춰 커서를 이동시키는 이벤트 리스너
-          playerRef.current.on('iteration', (notes) => {
+          playerRef.current.on('iteration', () => {
             if (osmdRef.current && osmdRef.current.cursor) {
-              osmdRef.current.cursor.next(); // 오디오 신호에 맞춰 커서 한 칸 전진
+              osmdRef.current.cursor.next();
             }
           });
 
           osmdRef.current.cursor.show();
         }
       } catch (err) {
-        console.error(err);
         setError('악보 로드 실패');
       } finally {
         setLoading(false);
@@ -72,27 +72,14 @@ function SheetViewerPage() {
   }, []);
 
   const togglePlay = async () => {
-    if (!playerRef.current || !osmdRef.current) return;
-
+    if (!playerRef.current) return;
     if (isPlaying) {
       playerRef.current.pause();
       setIsPlaying(false);
     } else {
-      // 재생 시작 시 커서가 끝에 있다면 리셋
-      if (osmdRef.current.cursor.iterator.EndReached) {
-        osmdRef.current.cursor.reset();
-      }
-      osmdRef.current.cursor.show();
+      if (osmdRef.current.cursor.iterator.EndReached) osmdRef.current.cursor.reset();
       await playerRef.current.play();
       setIsPlaying(true);
-    }
-  };
-
-  const stopPlay = () => {
-    if (playerRef.current) {
-      playerRef.current.stop();
-      osmdRef.current.cursor.reset();
-      setIsPlaying(false);
     }
   };
 
@@ -102,21 +89,19 @@ function SheetViewerPage() {
         <div className="control-left"></div>
         <div className="control-center">
           <button className={`btn-main ${isPlaying ? 'pause' : 'play'}`} onClick={togglePlay} disabled={loading}>
-            {isPlaying ? '⏸ 일시정지' : '▶ 재생하기'}
+            {isPlaying ? '⏸ PAUSE' : '▶ PLAY'}
           </button>
-          <button className="btn-sub" onClick={stopPlay} disabled={loading}>
-            ⏹ 정지
-          </button>
-          <button className="btn-sub" onClick={() => { stopPlay(); }} disabled={loading}>
-            🔄 처음으로
+          <button className="btn-sub" onClick={() => { playerRef.current.stop(); osmdRef.current.cursor.reset(); setIsPlaying(false); }}>
+            ⏹ STOP
           </button>
         </div>
         <div className="control-right">
-          <span className="info-badge">Auto-Syncing...</span>
+          <span className="info-badge">Free Scrolling Mode</span>
         </div>
       </div>
 
       <div className="sheet-main-content">
+        {/* 2. 하얀 배경(wrapper)이 악보 길이에 맞춰 유동적으로 늘어나도록 설정 */}
         <div className="osmd-container-wrapper">
           <div ref={containerRef} className="osmd-canvas-container" />
         </div>
