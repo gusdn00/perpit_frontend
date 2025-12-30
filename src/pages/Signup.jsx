@@ -92,7 +92,7 @@ function SignUp() {
 
             {/* 이름 */}
             <div className="input-group">
-              <label htmlFor="username">Name :</label>
+              <label htmlFor="username">이름 :</label>
               <input
                 className="signup-input"
                 type="text"
@@ -121,7 +121,7 @@ function SignUp() {
 
             {/* 비밀번호 */}
             <div className="input-group">
-              <label htmlFor="password">Password :</label>
+              <label htmlFor="password">비밀번호 :</label>
               <input
                 className="signup-input"
                 type="password"
@@ -135,7 +135,7 @@ function SignUp() {
 
             {/* 비밀번호 확인 */}
             <div className="input-group">
-              <label htmlFor="confirmPw">Confirm :</label>
+              <label htmlFor="confirmPw">비밀번호 확인 :</label>
               <input
                 className="signup-input"
                 type="password"
