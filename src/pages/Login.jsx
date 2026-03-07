@@ -20,7 +20,7 @@ function Login() {
     event.preventDefault();
     try {
         const response = await axios.post('/api/auth/login', {
-        id: id,
+        user_id: id,
         password: pw
         });
         console.log(response.data);
