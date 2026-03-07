@@ -1,0 +1,216 @@
+.payment-screen {
+  min-height: 82vh;
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+  padding-bottom: 60px;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-container {
+  width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.payment-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin: 0;
+}
+
+/* 잔액 박스 */
+.balance-box {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-label {
+  font-size: 15px;
+  color: #666;
+  font-weight: 500;
+}
+
+.balance-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #009688;
+}
+
+/* 패키지 선택 */
+.package-guide {
+  font-size: 14px;
+  color: #777;
+  margin: 0;
+  text-align: center;
+}
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.package-card {
+  background: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.package-card:hover {
+  border-color: #80cbc4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 150, 136, 0.15);
+}
+
+.package-card.selected {
+  border-color: #009688;
+  background: #e0f2f1;
+  box-shadow: 0 6px 16px rgba(0, 150, 136, 0.2);
+}
+
+.package-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #009688;
+  background: #e0f2f1;
+  border-radius: 20px;
+  padding: 2px 10px;
+  display: inline-block;
+  align-self: center;
+}
+
+.package-card.selected .package-badge {
+  background: #009688;
+  color: white;
+}
+
+.package-tokens {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2e2e2e;
+}
+
+.package-tokens span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-left: 4px;
+}
+
+.package-price {
+  font-size: 14px;
+  color: #888;
+  font-weight: 500;
+}
+
+/* 결제 버튼 */
+.pay-btn {
+  width: 100%;
+  height: 52px;
+  background-color: #fee500;
+  color: #3c1e1e;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.3px;
+}
+
+.pay-btn:hover:not(:disabled) {
+  background-color: #f5d900;
+  transform: translateY(-1px);
+}
+
+.pay-btn:disabled {
+  background-color: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* 내역 */
+.history-section {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px 28px;
+}
+
+.history-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #444;
+  margin: 0 0 16px 0;
+}
+
+.history-empty {
+  font-size: 14px;
+  color: #aaa;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-desc {
+  color: #555;
+  flex: 1;
+}
+
+.history-amount {
+  font-weight: 600;
+  margin: 0 16px;
+}
+
+.history-amount.positive {
+  color: #009688;
+}
+
+.history-amount.negative {
+  color: #e57373;
+}
+
+.history-date {
+  color: #aaa;
+  font-size: 12px;
+  white-space: nowrap;
+}

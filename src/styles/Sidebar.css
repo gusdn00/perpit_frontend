@@ -52,6 +52,15 @@
   background: rgba(255,255,255,0.15);
 }
 
+.payment-sidebar-btn {
+  background: rgba(254, 229, 0, 0.15);
+  color: #fee500;
+}
+
+.payment-sidebar-btn:hover {
+  background: rgba(254, 229, 0, 0.25);
+}
+
 .sidebar-footer {
   display: flex;
   justify-content: space-between;

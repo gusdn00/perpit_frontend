@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiLogOut, FiInfo, FiSettings } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { isLoggedInState } from '../authState';
 import '../styles/Sidebar.css';
@@ -8,6 +8,7 @@ import '../styles/Sidebar.css';
 export default function Sidebar() {
   const [opened, setOpened] = useState(false);
   const [isLoggedIn] = useRecoilState(isLoggedInState);
+  const navigate = useNavigate();
 
   return (
     <aside className={`sidebar ${opened ? 'opened' : ''}`}>
@@ -27,8 +28,9 @@ export default function Sidebar() {
 
             {isLoggedIn ? (
               <>
-                <button className="sidebar-btn">Profile</button>
-                <button className="sidebar-btn">My Sheets</button>
+                <button className="sidebar-btn" onClick={() => navigate('/mypage')}>Profile</button>
+                <button className="sidebar-btn" onClick={() => navigate('/mysheets')}>My Sheets</button>
+                <button className="sidebar-btn payment-sidebar-btn" onClick={() => navigate('/payment')}>토큰 충전</button>
               </>
             ) : (
               <Link to="/login">

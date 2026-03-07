@@ -1,0 +1,130 @@
+.result-screen {
+  height: 82vh;
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.result-box {
+  width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.result-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.result-icon.success {
+  background-color: #e0f2f1;
+  color: #009688;
+}
+
+.result-icon.error {
+  background-color: #ffebee;
+  color: #e53935;
+}
+
+.result-icon.cancel {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.result-sub {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+.result-balance {
+  background: #e0f2f1;
+  color: #00695c;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.result-balance strong {
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.result-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.result-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.result-btn.primary {
+  background-color: #009688;
+  color: white;
+}
+
+.result-btn.primary:hover {
+  background-color: #00796b;
+  transform: translateY(-1px);
+}
+
+.result-btn.secondary {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.result-btn.secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* loading spinner */
+.result-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e0f2f1;
+  border-top-color: #009688;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
