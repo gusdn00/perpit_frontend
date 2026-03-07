@@ -23,7 +23,6 @@ function PaymentPage() {
   const fetchBalance = async () => {
     try {
       const res = await axiosInstance.get('/payment/balance');
-      console.log('[balance raw]', res.data);
       setBalance(res.data);
     } catch (err) {
       console.error('잔액 조회 실패:', err);
@@ -35,7 +34,6 @@ function PaymentPage() {
   const fetchHistory = async () => {
     try {
       const res = await axiosInstance.get('/payment/history');
-      console.log('[history raw]', res.data);
       const raw = res.data;
       // 다양한 응답 형식 처리
       const list =

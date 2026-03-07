@@ -19,6 +19,7 @@ import PaymentPage from './pages/PaymentPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import PaymentFail from './pages/PaymentFail';
+import KakaoCallback from './pages/KakaoCallback';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -45,6 +46,7 @@ function App() {
             <Route path="/payment/success" element={<PaymentSuccess/>}/>
             <Route path="/payment/cancel" element={<PaymentCancel/>}/>
             <Route path="/payment/fail" element={<PaymentFail/>}/>
+            <Route path="/auth/kakao/callback" element={<KakaoCallback/>}/>
           </Routes>
       </Router>
     </>
