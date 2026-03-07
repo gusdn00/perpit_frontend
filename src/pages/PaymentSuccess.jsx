@@ -40,8 +40,10 @@ function PaymentSuccess() {
   const fetchBalance = async () => {
     try {
       const res = await axiosInstance.get('/payment/balance');
-      const data = res.data;
-      setBalance(data.token_balance ?? data.balance ?? data.tokens ?? 0);
+      const raw = res.data;
+      if (typeof raw === 'number') { setBalance(raw); return; }
+      const inner = raw?.data ?? raw;
+      setBalance(inner?.token_balance ?? inner?.balance ?? inner?.tokens ?? inner?.token ?? 0);
     } catch (err) {
       console.error(err);
     }

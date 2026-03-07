@@ -16,8 +16,10 @@ function FileUpload() {
   useEffect(() => {
     axiosInstance.get('/payment/balance')
       .then(res => {
-        const data = res.data;
-        setTokenBalance(data.token_balance ?? data.balance ?? data.tokens ?? 0);
+        const raw = res.data;
+        if (typeof raw === 'number') { setTokenBalance(raw); return; }
+        const inner = raw?.data ?? raw;
+        setTokenBalance(inner?.token_balance ?? inner?.balance ?? inner?.tokens ?? inner?.token ?? 0);
       })
       .catch(() => setTokenBalance(null));
   }, []);

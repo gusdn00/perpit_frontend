@@ -23,6 +23,7 @@ function PaymentPage() {
   const fetchBalance = async () => {
     try {
       const res = await axiosInstance.get('/payment/balance');
+      console.log('[balance raw]', res.data);
       setBalance(res.data);
     } catch (err) {
       console.error('잔액 조회 실패:', err);
@@ -34,8 +35,17 @@ function PaymentPage() {
   const fetchHistory = async () => {
     try {
       const res = await axiosInstance.get('/payment/history');
-      const data = res.data;
-      setHistory(Array.isArray(data) ? data : (data?.history ?? []));
+      console.log('[history raw]', res.data);
+      const raw = res.data;
+      // 다양한 응답 형식 처리
+      const list =
+        Array.isArray(raw)         ? raw :
+        Array.isArray(raw?.data)   ? raw.data :
+        Array.isArray(raw?.history)? raw.history :
+        Array.isArray(raw?.items)  ? raw.items :
+        Array.isArray(raw?.transactions) ? raw.transactions :
+        [];
+      setHistory(list);
     } catch (err) {
       console.error('내역 조회 실패:', err);
     }
@@ -64,8 +74,12 @@ function PaymentPage() {
   };
 
   const getBalanceValue = () => {
-    if (!balance) return 0;
-    return balance.token_balance ?? balance.balance ?? balance.tokens ?? 0;
+    if (balance === null || balance === undefined) return 0;
+    // 숫자 직접 반환하는 경우
+    if (typeof balance === 'number') return balance;
+    // { token_balance, balance, tokens } 또는 { data: { ... } } 패턴
+    const inner = balance?.data ?? balance;
+    return inner?.token_balance ?? inner?.balance ?? inner?.tokens ?? inner?.token ?? 0;
   };
 
   return (
@@ -112,14 +126,16 @@ function PaymentPage() {
               {history.map((item, idx) => (
                 <div key={idx} className="history-item">
                   <span className="history-desc">
-                    {item.description || item.item_name || '토큰 거래'}
+                    {item.description || item.item_name || item.title || item.type || '토큰 거래'}
                   </span>
-                  <span className={`history-amount ${(item.amount ?? item.quantity ?? 0) > 0 ? 'positive' : 'negative'}`}>
-                    {(item.amount ?? item.quantity ?? 0) > 0 ? '+' : ''}
-                    {item.amount ?? item.quantity ?? 0} 토큰
+                  <span className={`history-amount ${(item.amount ?? item.quantity ?? item.token_amount ?? 0) > 0 ? 'positive' : 'negative'}`}>
+                    {(item.amount ?? item.quantity ?? item.token_amount ?? 0) > 0 ? '+' : ''}
+                    {item.amount ?? item.quantity ?? item.token_amount ?? 0} 토큰
                   </span>
                   <span className="history-date">
-                    {item.created_at ? new Date(item.created_at).toLocaleDateString('ko-KR') : ''}
+                    {(item.created_at || item.date || item.timestamp)
+                      ? new Date(item.created_at || item.date || item.timestamp).toLocaleDateString('ko-KR')
+                      : ''}
                   </span>
                 </div>
               ))}
