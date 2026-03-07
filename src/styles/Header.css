@@ -48,3 +48,34 @@
   background-color: #009688;
   color: white;
 }
+
+/* 토큰 잔액 */
+.token-balance-link {
+  text-decoration: none;
+}
+
+.token-balance {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 38px;
+  padding: 0 14px;
+  background: #e0f2f1;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.token-balance:hover {
+  background: #b2dfdb;
+}
+
+.token-icon {
+  font-size: 15px;
+}
+
+.token-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #00695c;
+}

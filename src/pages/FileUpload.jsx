@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import '../styles/FileUpload.css';
@@ -7,10 +7,20 @@ function FileUpload() {
   const navigate = useNavigate();
 
   const [file, setFile] = useState(null);
+  const [tokenBalance, setTokenBalance] = useState(null);
   const [songName, setSongName] = useState('');
   const [purpose, setPurpose] = useState('accompaniment'); // accompaniment | performance
   const [style, setStyle] = useState('original');          // rock | ballad | original
   const [difficulty, setDifficulty] = useState('easy');    // easy | normal
+
+  useEffect(() => {
+    axiosInstance.get('/payment/balance')
+      .then(res => {
+        const data = res.data;
+        setTokenBalance(data.token_balance ?? data.balance ?? data.tokens ?? 0);
+      })
+      .catch(() => setTokenBalance(null));
+  }, []);
 
   // enum 매핑 (백엔드 합의값)
   const purposeMap = {
@@ -168,6 +178,16 @@ function FileUpload() {
                 Normal
               </button>
             </div>
+          </div>
+
+          <div className="token-info">
+            <span className="token-info-icon">🪙</span>
+            <span className="token-info-text">
+              악보 생성 시 토큰이 소모됩니다.
+              {tokenBalance !== null && (
+                <> &nbsp;현재 잔액: <strong>{tokenBalance} 토큰</strong></>
+              )}
+            </span>
           </div>
 
           <div className="button-group">

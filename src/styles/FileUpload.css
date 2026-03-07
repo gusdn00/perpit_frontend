@@ -129,6 +129,27 @@
   border-color: #009688;
 }
 
+.token-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0f2f1;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #00695c;
+  margin-top: 8px;
+}
+
+.token-info-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.token-info-text strong {
+  font-weight: 700;
+}
+
 .button-group {
   display: flex;
   justify-content: flex-end;

@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import logo from '../assets/Logo.png';
 import { isLoggedInState } from '../authState';
 import { useRecoilState } from 'recoil';
+import axiosInstance from '../axiosInstance';
 
 function Header() {
   const navigate = useNavigate();
-
-  
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
+  const [tokenBalance, setTokenBalance] = useState(null);
 
-  
   useEffect(() => {
     const token = localStorage.getItem("Token");
     if (token) {
@@ -19,9 +18,23 @@ function Header() {
     }
   }, [setIsLoggedIn]);
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setTokenBalance(null);
+      return;
+    }
+    axiosInstance.get('/payment/balance')
+      .then(res => {
+        const data = res.data;
+        setTokenBalance(data.token_balance ?? data.balance ?? data.tokens ?? 0);
+      })
+      .catch(() => setTokenBalance(null));
+  }, [isLoggedIn]);
+
   const handleLogout = () => {
     localStorage.removeItem("Token");
     setIsLoggedIn(false);
+    setTokenBalance(null);
     navigate('/');
   };
 
@@ -35,6 +48,14 @@ function Header() {
 
       {isLoggedIn ? (
         <div className="auth-buttons">
+          {tokenBalance !== null && (
+            <Link to="/payment" className="token-balance-link">
+              <div className="token-balance">
+                <span className="token-icon">🪙</span>
+                <span className="token-count">{tokenBalance}</span>
+              </div>
+            </Link>
+          )}
           <Link to="/mysheets">
             <button className="auth-btn">My Sheets</button>
           </Link>
