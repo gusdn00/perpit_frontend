@@ -28,7 +28,7 @@ No test suite is configured.
 - `src/authState.js` exports a Recoil atom `isLoggedInState` (boolean). `Header.jsx` initializes it from localStorage on mount.
 - Login and Signup pages use **plain `axios`** (not `axiosInstance`) with relative paths (`/api/auth/...`) — requires a proxy or the backend to serve on the same origin.
 
-**Backend base URL:** `http://13.211.147.73:8000` (set in `axiosInstance.js`)
+**Backend base URL:** `http://3.27.76.139:8000` (set in `axiosInstance.js`)
 
 **Sheet generation flow:**
 1. `FileUpload` → `POST /create_sheets` (FormData) → receives `jobId`
