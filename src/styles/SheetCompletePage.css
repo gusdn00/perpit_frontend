@@ -1,45 +1,48 @@
 .sheet-complete-screen {
-  height: 82vh;
+  min-height: calc(100vh - 64px);
   padding-left: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f5f5f5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 .sheet-complete-box {
   background-color: white;
-  width: 900px;
-  padding: 40px 50px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  width: 860px;
+  padding: 40px 48px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .complete-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
-  margin-bottom: 30px;
+  color: #222;
+  margin-bottom: 32px;
 }
 
 .sheet-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 50px;
+  gap: 48px;
+  width: 100%;
 }
 
-/* =========================
-   Sheet Preview (Blur)
-   ========================= */
+/* 악보 미리보기 */
 .sheet-images {
   position: relative;
   width: 180px;
   height: 250px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .sheet-img {
@@ -49,7 +52,6 @@
   position: absolute;
   border: 1px solid #ccc;
   border-radius: 8px;
-  opacity: 0.85;
   transition: all 0.3s ease;
 }
 
@@ -74,14 +76,13 @@
   filter: blur(1.5px);
 }
 
-/* Overlay */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 180px;
   height: 250px;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -95,9 +96,8 @@
   transition: opacity 0.3s ease;
 }
 
-/* Hover 효과 */
 .sheet-images:hover .overlay {
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .sheet-images:hover .play-icon {
@@ -108,68 +108,82 @@
   filter: blur(1px);
 }
 
-/* =========================
-   Info & Buttons
-   ========================= */
+/* 정보 & 버튼 */
 .sheet-info {
-  max-width: 400px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .info-text {
   font-size: 15px;
   color: #555;
-  margin-bottom: 20px;
-  line-height: 1.6;
+  line-height: 1.7;
+  margin: 0 0 8px 0;
 }
 
 .btn {
   padding: 12px 24px;
-  font-size: 15px;
-  border-radius: 8px;
-  border: 1px solid #10a37f;
-  background-color: #10a37f;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 10px;
+  border: 1.5px solid #009688;
+  background-color: #009688;
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .btn:hover {
-  background-color: #0d8a6b;
+  background-color: #00796b;
 }
 
 .download-btn {
   width: 100%;
-  margin-bottom: 20px;
 }
 
 .btn-group {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .sub-btn {
   flex: 1;
   background-color: white;
-  color: #10a37f;
-  border: 1px solid #10a37f;
+  color: #009688;
+  border: 1.5px solid #009688;
 }
 
 .sub-btn:hover {
-  background-color: #10a37f;
+  background-color: #009688;
   color: white;
 }
 
 .go-main-btn {
-  margin-top: 40px;
-  padding: 10px 30px;
+  margin-top: 32px;
+  padding: 10px 32px;
   border-radius: 20px;
-  border: 1px solid #aaa;
+  border: 1.5px solid #ccc;
   background: white;
   font-size: 14px;
+  color: #666;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .go-main-btn:hover {
-  background: #10a37f;
+  background: #009688;
+  border-color: #009688;
   color: white;
+}
+
+.loading {
+  height: calc(100vh - 64px);
+  padding-left: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: #888;
 }

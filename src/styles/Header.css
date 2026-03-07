@@ -1,52 +1,50 @@
 .header {
-  height: 15vh;
+  height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #eee;
+  border-bottom: 1px solid #e8e8e8;
   padding-left: 100px;
   padding-right: 30px;
-  transition: padding-left 0.3s ease; /* ← 부드럽게 이동 */
+  background: #ffffff;
+  transition: padding-left 0.3s ease;
 }
 
 .sidebar.opened ~ .header {
-  padding-left: 200px;  /* ← 사이드바 펼쳐졌을 때 */
+  padding-left: 200px;
 }
-
 
 .logo {
   height: 100%;
-  width: 300px;
-  padding-left: 100px;
   display: flex;
   align-items: center;
-  transition: padding-left 0.3s ease;  /* ← 부드러운 이동 */
 }
 
 .logo img {
-  height: 100px;
+  height: 44px;
   width: auto;
   object-fit: contain;
 }
 
 .auth-buttons {
   display: flex;
-  gap: 16px;
+  gap: 10px;
 }
 
 .auth-btn {
-  height: 45px;
-  width: 110px;
-  font-size: 15px;
-  border: 1px solid #aaa;
+  height: 38px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid #009688;
   background: white;
+  color: #009688;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .auth-btn:hover {
-  background-color: #10a37f;
+  background-color: #009688;
   color: white;
-  border-color: #10a37f;
 }

@@ -1,21 +1,22 @@
 .upload-page {
-  min-height: calc(100vh - 15vh);
+  min-height: calc(100vh - 64px);
   padding: 40px 80px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .upload-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
-  padding: 40px;
-  gap: 60px;
+  padding: 40px 48px;
+  gap: 48px;
 }
 
 /* 좌측 */
@@ -24,31 +25,62 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
+}
+
+.left-panel h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  align-self: flex-start;
 }
 
 .file-box {
-  width: 250px;
-  height: 250px;
-  border: 2px dashed #aaa;
-  border-radius: 10px;
+  width: 220px;
+  height: 220px;
+  border: 2px dashed #b2dfdb;
+  border-radius: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  cursor: pointer;
+  background: #f9fffe;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.file-box:hover {
+  border-color: #009688;
+  background: #e0f2f1;
 }
 
 .file-placeholder {
   font-size: 48px;
-  color: #ccc;
+  color: #b2dfdb;
+}
+
+.file-name {
+  max-width: 220px;
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .song-name-input {
-  width: 250px;
-  margin-top: 20px;
-  height: 40px;
-  padding: 0 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  width: 220px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.song-name-input:focus {
+  border-color: #009688;
 }
 
 /* 우측 */
@@ -59,82 +91,79 @@
 }
 
 .section {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
 }
 
 .toggle-group {
   display: flex;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 10px;
 }
 
 .toggle-btn {
   flex: 1;
   height: 40px;
   border-radius: 20px;
-  border: 1px solid #aaa;
+  border: 1.5px solid #ccc;
   background: white;
-  color: #444;
+  color: #555;
+  font-size: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .toggle-btn:hover {
-  background: #f1f3f5;
+  border-color: #009688;
+  color: #009688;
 }
 
 .toggle-btn.selected {
-  background: #10a37f;
+  background: #009688;
   color: white;
-  border-color: #10a37f;
+  border-color: #009688;
 }
 
 .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 16px;
-  margin-top: 30px;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 24px;
 }
 
 .back-btn,
 .go-btn {
   width: 100px;
-  height: 40px;
-  border-radius: 20px;
+  height: 42px;
+  border-radius: 21px;
   border: none;
   cursor: pointer;
+  font-size: 14px;
   font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .back-btn {
-  background: #ccc;
-  color: #333;
+  background: #f0f0f0;
+  color: #555;
+}
+
+.back-btn:hover {
+  background: #e0e0e0;
 }
 
 .go-btn {
-  background: #10a37f;
+  background: #009688;
   color: white;
 }
 
 .go-btn:hover {
-  background: #0d8a6b;
-}
-
-.description {
-  margin-top: 30px;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.6;
-}
-
-.file-name {
-  margin-top: 10px;
-  max-width: 250px;
-  font-size: 14px;
-  color: #555;
-  text-align: center;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  background: #00796b;
+  transform: translateY(-1px);
 }

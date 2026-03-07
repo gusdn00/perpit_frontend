@@ -171,7 +171,7 @@ function FileUpload() {
           </div>
 
           <div className="button-group">
-            <button className="back-btn">Back</button>
+            <button className="back-btn" onClick={() => navigate(-1)}>Back</button>
             <button className="go-btn" onClick={handleSubmit}>
               Go!
             </button>

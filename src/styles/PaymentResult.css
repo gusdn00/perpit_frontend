@@ -1,5 +1,5 @@
 .result-screen {
-  height: 82vh;
+  min-height: calc(100vh - 64px);
   padding-left: 100px;
   display: flex;
   justify-content: center;

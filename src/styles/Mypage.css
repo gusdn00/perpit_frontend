@@ -1,5 +1,5 @@
 .profile-screen {
-  height: 82vh;
+  min-height: calc(100vh - 64px);
   padding-left: 100px;
   display: flex;
   justify-content: center;
@@ -11,33 +11,35 @@
 
 .profile-box {
   width: 500px;
-  padding: 40px 40px; /* 좌우 padding 증가 */
-  border-radius: 12px;
+  padding: 40px;
+  border-radius: 16px;
   background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 24px; /* 위아래 여백 확대 */
+  gap: 24px;
 }
 
 .profile-title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: #222;
   text-align: center;
 }
 
 .profile-info {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* 각 항목 간 간격 증가 */
+  gap: 16px;
 }
 
 .profile-row {
   display: flex;
   justify-content: space-between;
-  font-size: 16px;
-  padding: 8px 50px; /* 항목 위아래 여백 추가 */
+  font-size: 15px;
+  padding: 8px 16px;
+  background: #f9f9f9;
+  border-radius: 10px;
 }
 
 .label {
@@ -48,27 +50,27 @@
 .value {
   color: #333;
   max-width: 60%;
-  word-break: break-all; /* 길어질 때 줄바꿈 */
-  text-align: right;     /* 오른쪽 정렬로 간격 확보 */
+  word-break: break-all;
+  text-align: right;
 }
 
 .profile-buttons {
   display: flex;
-  gap: 16px; /* 버튼 간격 확대 */
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .profile-btn {
   flex: 1;
-  height: 48px;
+  height: 46px;
   background-color: #009688;
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   border: none;
   border-radius: 24px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 .profile-btn:hover {
