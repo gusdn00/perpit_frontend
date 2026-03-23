@@ -58,10 +58,6 @@ function Mypage() {
           </div>
         </div>
 
-        <div className="profile-buttons">
-          <button className="profile-btn">Modify Information</button>
-          <button className="profile-btn">Password Change</button>
-        </div>
       </div>
     </div>
   );
