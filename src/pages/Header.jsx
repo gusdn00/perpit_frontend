@@ -58,7 +58,7 @@ function Header() {
       {isLoggedIn ? (
         <div className="auth-buttons">
           {userName && (
-            <span className="header-username">{userName}</span>
+            <span className="header-username">{userName} 님</span>
           )}
           {tokenBalance !== null && (
             <Link to="/payment" className="token-balance-link">
