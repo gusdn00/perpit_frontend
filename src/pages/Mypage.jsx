@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import '../styles/Mypage.css';
+import '../styles/DinoGame.css';
+import DinoGame from './DinoGame';
 
 function Mypage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDino, setShowDino] = useState(false);
 
   /* =========================
      프로필 조회
@@ -38,6 +41,7 @@ function Mypage() {
 
   return (
     <div className="profile-screen">
+      {showDino && <DinoGame onClose={() => setShowDino(false)} />}
       <div className="profile-box">
         <h2 className="profile-title">Profile</h2>
 
@@ -58,6 +62,7 @@ function Mypage() {
           </div>
         </div>
 
+        <button className="easter-egg-btn" onClick={() => setShowDino(true)} title="?">🦕</button>
       </div>
     </div>
   );
