@@ -10,6 +10,7 @@ function Header() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInState);
   const [tokenBalance, setTokenBalance] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("Token");
@@ -21,6 +22,7 @@ function Header() {
   useEffect(() => {
     if (!isLoggedIn) {
       setTokenBalance(null);
+      setUserName(null);
       return;
     }
     axiosInstance.get('/payment/balance')
@@ -31,12 +33,17 @@ function Header() {
         setTokenBalance(inner?.token_balance ?? inner?.balance ?? inner?.tokens ?? inner?.token ?? 0);
       })
       .catch(() => setTokenBalance(null));
+
+    axiosInstance.get('/auth/profile')
+      .then(res => setUserName(res.data?.data?.name ?? null))
+      .catch(() => setUserName(null));
   }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("Token");
     setIsLoggedIn(false);
     setTokenBalance(null);
+    setUserName(null);
     navigate('/');
   };
 
@@ -50,6 +57,9 @@ function Header() {
 
       {isLoggedIn ? (
         <div className="auth-buttons">
+          {userName && (
+            <span className="header-username">{userName}</span>
+          )}
           {tokenBalance !== null && (
             <Link to="/payment" className="token-balance-link">
               <div className="token-balance">

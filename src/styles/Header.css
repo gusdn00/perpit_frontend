@@ -49,6 +49,15 @@
   color: white;
 }
 
+/* 사용자 이름 */
+.header-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #00695c;
+  padding: 0 8px;
+  align-self: center;
+}
+
 /* 토큰 잔액 */
 .token-balance-link {
   text-decoration: none;
