@@ -165,9 +165,10 @@ function SheetViewerPage() {
   const transposeRef       = useRef(0);
   const solfegeRef         = useRef(false);
   const autoScrollRef      = useRef(false);
-  const metronomeCtxRef    = useRef(null);
-  const metronomeIdRef     = useRef(null);
-  const firstIterRef       = useRef(true);
+  const metronomeCtxRef      = useRef(null);
+  const metronomeIdRef       = useRef(null);
+  const metronomeNextNoteRef = useRef(0);
+  const firstIterRef         = useRef(true);
 
   const [loading,          setLoading]          = useState(true);
   const [reloading,        setReloading]         = useState(false);
@@ -220,7 +221,10 @@ function SheetViewerPage() {
     });
 
     player.on('state-change', (state) => {
-      if (state === 'STOPPED') setIsPlaying(false);
+      if (state === 'STOPPED') {
+        setIsPlaying(false);
+        stopMetronome();
+      }
     });
 
     osmd.cursor.show();
@@ -275,22 +279,40 @@ function SheetViewerPage() {
     };
   }, []);
 
-  /* ════ 메트로놈 ════ */
-  const tick = (ctx) => {
+  /* ════ 메트로놈 (lookahead 스케줄러) ════
+     setInterval 대신 Web Audio API 클럭으로 정확히 스케줄링.
+     bpmRef.current를 동적으로 읽으므로 BPM 변경 시 재시작 불필요.
+  ════════════════════════════════════════ */
+  const LOOKAHEAD_SEC = 0.1;   // 100ms 앞서 스케줄
+  const SCHEDULER_MS  = 25;    // 25ms마다 스케줄러 실행
+
+  const scheduleClick = (ctx, time) => {
     const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.45, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.04);
+    gain.gain.setValueAtTime(0.4, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+    osc.start(time); osc.stop(time + 0.05);
   };
 
-  const startMetronome = (bpmVal) => {
+  // startTime: 첫 번째 클릭을 울릴 AudioContext 시각 (생략 시 즉시)
+  const startMetronome = (startTime) => {
     stopMetronome();
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     metronomeCtxRef.current = ctx;
-    tick(ctx);
-    metronomeIdRef.current = setInterval(() => tick(ctx), Math.round((60 / bpmVal) * 1000));
+    metronomeNextNoteRef.current = startTime ?? ctx.currentTime;
+
+    const scheduler = () => {
+      const c = metronomeCtxRef.current;
+      if (!c) return;
+      while (metronomeNextNoteRef.current < c.currentTime + LOOKAHEAD_SEC) {
+        scheduleClick(c, metronomeNextNoteRef.current);
+        metronomeNextNoteRef.current += 60.0 / bpmRef.current;
+      }
+    };
+
+    scheduler();
+    metronomeIdRef.current = setInterval(scheduler, SCHEDULER_MS);
   };
 
   const stopMetronome = () => {
@@ -300,7 +322,7 @@ function SheetViewerPage() {
 
   const toggleMetronome = () => {
     if (metronomeOn) { stopMetronome(); setMetronomeOn(false); }
-    else             { startMetronome(bpmRef.current); setMetronomeOn(true); }
+    else             { startMetronome(); setMetronomeOn(true); }
   };
 
   /* ════ BPM ════ */
@@ -308,7 +330,7 @@ function SheetViewerPage() {
     const newBpm = Math.max(50, Math.min(200, val));
     bpmRef.current = newBpm; setBpm(newBpm);
     playerRef.current?.setBpm(newBpm);
-    if (metronomeOn) startMetronome(newBpm);
+    // 메트로놈은 재시작 없이 bpmRef를 동적으로 읽으므로 자동 반영됨
   };
 
   /* ════ 전조 ════ */
@@ -335,19 +357,27 @@ function SheetViewerPage() {
   /* ════ 재생 제어 ════ */
   const togglePlay = async () => {
     if (!playerRef.current) return;
-    if (isPlaying) { playerRef.current.pause(); setIsPlaying(false); }
-    else {
+    if (isPlaying) {
+      playerRef.current.pause();
+      setIsPlaying(false);
+      // 일시정지 시 메트로놈도 정지
+      if (metronomeOn) stopMetronome();
+    } else {
       const iter = osmdRef.current.cursor.Iterator ?? osmdRef.current.cursor.iterator;
       if (iter?.EndReached) {
         osmdRef.current.cursor.reset(); firstIterRef.current = true; setCurrentMeasure(0);
       }
-      await playerRef.current.play(); setIsPlaying(true);
+      await playerRef.current.play();
+      setIsPlaying(true);
+      // 재생 시작 시 메트로놈을 AudioContext 현재 시각에 맞춰 재시작 → 첫 박 동기화
+      if (metronomeOn) startMetronome();
     }
   };
 
   const handleStop = () => {
     playerRef.current?.stop(); osmdRef.current?.cursor.reset();
     firstIterRef.current = true; setIsPlaying(false); setCurrentMeasure(0);
+    if (metronomeOn) stopMetronome();
   };
 
   /* ── 현재 조성 이름 계산 ── */
