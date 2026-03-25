@@ -354,6 +354,83 @@ function SheetViewerPage() {
     const next = !autoScroll; autoScrollRef.current = next; setAutoScroll(next);
   };
 
+  /* ════ 마디 탐색 (클릭 seek) ════ */
+  const seekToMeasure = async (measureIdx) => {
+    if (!osmdRef.current || !playerRef.current) return;
+
+    const wasPlaying = isPlaying;
+
+    // 재생 중단 및 메트로놈 정지
+    playerRef.current.stop();
+    setIsPlaying(false);
+    if (metronomeOn) stopMetronome();
+
+    // 커서를 처음으로 리셋 후 목표 마디까지 전진
+    const cursor = osmdRef.current.cursor;
+    cursor.reset();
+
+    let safety = 0;
+    while (safety++ < 20000) {
+      const iter = cursor.Iterator ?? cursor.iterator;
+      const curIdx = iter?.CurrentMeasureIndex ?? iter?.currentMeasureIndex ?? 0;
+      if (curIdx >= measureIdx || (iter?.EndReached ?? false)) break;
+      cursor.next();
+    }
+
+    const iter = cursor.Iterator ?? cursor.iterator;
+    const actualIdx = iter?.CurrentMeasureIndex ?? iter?.currentMeasureIndex ?? 0;
+    setCurrentMeasure(actualIdx + 1);
+    firstIterRef.current = true;
+
+    // 플레이어 내부 이터레이터를 현재 커서 위치로 갱신
+    await playerRef.current.loadScore(osmdRef.current);
+    playerRef.current.setBpm(bpmRef.current);
+
+    // 재생 중이었으면 재개
+    if (wasPlaying) {
+      await playerRef.current.play();
+      setIsPlaying(true);
+      if (metronomeOn) startMetronome();
+    }
+  };
+
+  const handleSheetClick = async (e) => {
+    if (loading || reloading || !osmdRef.current?.GraphicSheet) return;
+
+    const svg = containerRef.current?.querySelector('svg');
+    if (!svg) return;
+
+    const svgRect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+
+    // 클릭 좌표를 SVG 내부 좌표계로 변환
+    const scaleX = vb.width  > 0 ? vb.width  / svgRect.width  : 1;
+    const scaleY = vb.height > 0 ? vb.height / svgRect.height : 1;
+    const cx = (e.clientX - svgRect.left) * scaleX;
+    const cy = (e.clientY - svgRect.top)  * scaleY;
+
+    // GraphicSheet에서 클릭된 마디 탐색
+    const staffMeasures = osmdRef.current.GraphicSheet.MeasureList?.[0];
+    if (!staffMeasures?.length) return;
+
+    let clickedIdx = -1;
+    for (let i = 0; i < staffMeasures.length; i++) {
+      const ps = staffMeasures[i]?.PositionAndShape;
+      if (!ps) continue;
+      const ax = ps.AbsolutePosition.x;
+      const ay = ps.AbsolutePosition.y;
+      const w  = ps.Size.width;
+      const h  = ps.Size.height;
+      if (cx >= ax && cx <= ax + w && cy >= ay && cy <= ay + h) {
+        clickedIdx = i;
+        break;
+      }
+    }
+
+    if (clickedIdx < 0) return;
+    await seekToMeasure(clickedIdx);
+  };
+
   /* ════ 재생 제어 ════ */
   const togglePlay = async () => {
     if (!playerRef.current) return;
@@ -455,7 +532,12 @@ function SheetViewerPage() {
       <div className="sheet-main-content">
         <div className="osmd-container-wrapper">
           {reloading && <div className="reloading-overlay">악보 갱신 중...</div>}
-          <div ref={containerRef} className="osmd-canvas-container" />
+          <div
+            ref={containerRef}
+            className="osmd-canvas-container"
+            onClick={handleSheetClick}
+            style={{ cursor: disabled ? 'default' : 'pointer' }}
+          />
         </div>
       </div>
 
