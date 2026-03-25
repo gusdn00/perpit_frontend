@@ -50,24 +50,12 @@ function MySheetsPage() {
     setDownloadSheet(null);
   };
 
-  /* ── SVG 크기 추출 헬퍼 ── */
-  const getSvgSize = (svg) => {
-    const rect = svg.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) return { w: rect.width, h: rect.height };
-    const vb = svg.viewBox?.baseVal;
-    if (vb?.width > 0 && vb?.height > 0) return { w: vb.width, h: vb.height };
-    const w = parseFloat(svg.getAttribute('width'));
-    const h = parseFloat(svg.getAttribute('height'));
-    if (w > 0 && h > 0) return { w, h };
-    return { w: 900, h: 1200 };
-  };
-
   /* ── PDF 다운로드 ── */
   const handleDownloadPDF = async () => {
     if (!downloadSheet) return;
     setPdfLoading(true);
 
-    // body에 직접 붙이는 임시 컨테이너 (getBoundingClientRect가 정상 동작)
+    // body에 직접 붙이는 임시 컨테이너 (레이아웃 계산이 정상 동작하도록 화면 밖에 위치)
     const tempContainer = document.createElement('div');
     tempContainer.style.cssText =
       'position:fixed;top:0;left:0;width:900px;background:white;opacity:0;pointer-events:none;z-index:-9999;';
@@ -83,7 +71,7 @@ function MySheetsPage() {
       // 2. 라이브러리 동적 로드
       const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay');
       const { jsPDF } = await import('jspdf');
-      const { default: svg2pdf } = await import('svg2pdf.js');
+      const { default: html2canvas } = await import('html2canvas');
 
       // 3. OSMD 렌더링
       const osmd = new OpenSheetMusicDisplay(tempContainer, {
@@ -96,26 +84,37 @@ function MySheetsPage() {
       // 렌더링 완료 대기
       await new Promise(r => setTimeout(r, 500));
 
-      // 4. SVG 수집
-      const svgElements = [...tempContainer.querySelectorAll('svg')];
-      if (svgElements.length === 0) throw new Error('SVG를 찾을 수 없습니다 (OSMD 렌더링 실패)');
+      if (!tempContainer.querySelector('svg')) {
+        throw new Error('OSMD 렌더링 실패: SVG를 찾을 수 없습니다');
+      }
 
-      // 5. PDF 생성 (A4, 여백 28pt)
-      const A4_W = 595.28;
-      const A4_H = 841.89;
-      const margin = 28;
-      const drawW = A4_W - margin * 2;
+      // 4. html2canvas로 캡처 (scale:2 = 고해상도)
+      const canvas = await html2canvas(tempContainer, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false,
+      });
+
+      // 5. A4 기준으로 PDF 페이지 분할
+      const A4_W = 595.28; // pt
+      const A4_H = 841.89; // pt
+      const imgW = A4_W;
+      const imgH = (canvas.height * A4_W) / canvas.width;
 
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-      for (let i = 0; i < svgElements.length; i++) {
-        if (i > 0) pdf.addPage();
-        const svg = svgElements[i];
-        const { w: svgW, h: svgH } = getSvgSize(svg);
-        const scale = drawW / svgW;
-        const drawH = Math.min(svgH * scale, A4_H - margin * 2);
+      let remaining = imgH;
+      let offset = 0;
+      let firstPage = true;
 
-        await svg2pdf(svg, pdf, { x: margin, y: margin, width: drawW, height: drawH });
+      while (remaining > 0) {
+        if (!firstPage) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, -offset, imgW, imgH);
+        remaining -= A4_H;
+        offset += A4_H;
+        firstPage = false;
       }
 
       pdf.save(`${downloadSheet.name || 'sheet'}.pdf`);
