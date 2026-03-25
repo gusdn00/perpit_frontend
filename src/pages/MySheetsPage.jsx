@@ -57,8 +57,9 @@ function MySheetsPage() {
         style,
         difficulty,
       });
+      const jobId = res.data.jobId ?? res.data.job_id;
       setRemixSheet(null);
-      navigate('/converting', { state: { job_id: res.data.job_id } });
+      navigate('/converting', { state: { job_id: jobId } });
     } catch (err) {
       console.error(err);
       alert('재생성 요청에 실패했습니다.');
