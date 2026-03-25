@@ -8,7 +8,8 @@
       "Bash(node_modules/.bin/vite build:*)",
       "Bash(node:*)",
       "Bash(rm:*)",
-      "Bash(grep -E \"\\\\.d\\\\.ts$\")"
+      "Bash(grep -E \"\\\\.d\\\\.ts$\")",
+      "Bash(npm install:*)"
     ]
   }
 }
