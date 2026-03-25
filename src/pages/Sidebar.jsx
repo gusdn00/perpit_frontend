@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiLogOut, FiInfo, FiSettings } from 'react-icons/fi';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { isLoggedInState } from '../authState';
 import '../styles/Sidebar.css';
@@ -9,6 +9,9 @@ export default function Sidebar() {
   const [opened, setOpened] = useState(false);
   const [isLoggedIn] = useRecoilState(isLoggedInState);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  if (location.pathname === '/sheet-viewer') return null;
 
   return (
     <aside className={`sidebar ${opened ? 'opened' : ''}`}>

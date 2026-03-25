@@ -14,19 +14,37 @@
   align-items: center;
   padding: 0 32px;
   background: white;
-  height: 72px;
+  height: 90px;
   border-bottom: 1px solid #e0e0e0;
   z-index: 10;
   gap: 16px;
 }
 
-/* ── BPM 컨트롤 ── */
-.bpm-control {
+/* ── 좌측 영역: BPM + KEY 세로 배치 ── */
+.control-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ── BPM / KEY 공통 행 ── */
+.bpm-control,
+.key-control {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
+.ctrl-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  letter-spacing: 0.8px;
+  min-width: 32px;
+}
+
+/* (구) .bpm-label 호환 */
 .bpm-label {
   font-size: 12px;
   font-weight: 600;
@@ -34,6 +52,7 @@
   letter-spacing: 0.5px;
 }
 
+.adj-btn,
 .bpm-adj {
   width: 24px;
   height: 24px;
@@ -41,7 +60,7 @@
   border: 1.5px solid #ddd;
   background: #f9f9f9;
   color: #555;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -52,15 +71,35 @@
   line-height: 1;
 }
 
+.adj-btn:hover:not(:disabled),
 .bpm-adj:hover:not(:disabled) {
   border-color: #009688;
   color: #009688;
   background: #e0f2f1;
 }
 
+.adj-btn:disabled,
 .bpm-adj:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ── KEY 표시 ── */
+.key-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  min-width: 40px;
+  text-align: center;
+}
+
+.transpose-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #009688;
+  padding: 1px 6px;
+  border-radius: 10px;
 }
 
 .bpm-slider {
