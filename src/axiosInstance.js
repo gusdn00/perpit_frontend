@@ -17,11 +17,14 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터 (단순 에러 전달)
+// 응답 인터셉터 (401 시 자동 로그아웃)
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // 여기서는 아무 처리 안 하고 그대로 넘김
+    if (error.response?.status === 401) {
+      localStorage.removeItem('Token');
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );
