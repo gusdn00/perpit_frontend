@@ -7,7 +7,8 @@
       "Bash(npx vite:*)",
       "Bash(node_modules/.bin/vite build:*)",
       "Bash(node:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(grep -E \"\\\\.d\\\\.ts$\")"
     ]
   }
 }
