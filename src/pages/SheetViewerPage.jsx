@@ -64,6 +64,7 @@ function SheetViewerPage() {
   const autoScrollRef   = useRef(false);
   const metronomeCtxRef = useRef(null);
   const metronomeIdRef  = useRef(null);
+  const firstIterRef    = useRef(true);
 
   const [loading,        setLoading]        = useState(true);
   const [reloading,      setReloading]      = useState(false);
@@ -108,9 +109,15 @@ function SheetViewerPage() {
       player.setBpm(bpmRef.current);
     }
 
+    firstIterRef.current = true;
+
     player.on('iteration', () => {
       if (!osmd.cursor) return;
-      osmd.cursor.next();
+      if (firstIterRef.current) {
+        firstIterRef.current = false;
+      } else {
+        osmd.cursor.next();
+      }
       const iter = osmd.cursor.Iterator ?? osmd.cursor.iterator;
       const idx = iter?.CurrentMeasureIndex ?? iter?.currentMeasureIndex ?? 0;
       setCurrentMeasure(idx + 1);
@@ -242,6 +249,7 @@ function SheetViewerPage() {
       const iter = osmdRef.current.cursor.Iterator ?? osmdRef.current.cursor.iterator;
       if (iter?.EndReached) {
         osmdRef.current.cursor.reset();
+        firstIterRef.current = true;
         setCurrentMeasure(0);
       }
       await playerRef.current.play();
@@ -252,6 +260,7 @@ function SheetViewerPage() {
   const handleStop = () => {
     playerRef.current?.stop();
     osmdRef.current?.cursor.reset();
+    firstIterRef.current = true;
     setIsPlaying(false);
     setCurrentMeasure(0);
   };
