@@ -6,76 +6,106 @@
   overflow: hidden;
 }
 
-/* ── 컨트롤바 ── */
+/* ── 컨트롤 바 ── */
 .player-controls {
   flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
+  padding: 0 32px;
   background: white;
-  height: 70px;
+  height: 72px;
   border-bottom: 1px solid #e0e0e0;
   z-index: 10;
+  gap: 16px;
 }
 
-/* ── 속도 컨트롤 ── */
-.speed-control {
+/* ── BPM 컨트롤 ── */
+.bpm-control {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.speed-label {
-  font-size: 13px;
+.bpm-label {
+  font-size: 12px;
+  font-weight: 600;
   color: #888;
-  margin-right: 4px;
+  letter-spacing: 0.5px;
 }
 
-.speed-btn {
-  padding: 4px 10px;
-  border-radius: 14px;
+.bpm-adj {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   border: 1.5px solid #ddd;
   background: #f9f9f9;
   color: #555;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   transition: all 0.15s ease;
+  line-height: 1;
 }
 
-.speed-btn:hover:not(:disabled) {
+.bpm-adj:hover:not(:disabled) {
   border-color: #009688;
   color: #009688;
+  background: #e0f2f1;
 }
 
-.speed-btn.active {
-  background: #009688;
-  border-color: #009688;
-  color: white;
-  font-weight: 600;
-}
-
-.speed-btn:disabled {
+.bpm-adj:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
+.bpm-slider {
+  width: 120px;
+  accent-color: #009688;
+  cursor: pointer;
+}
+
+.bpm-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bpm-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  min-width: 36px;
+  text-align: center;
+}
+
 /* ── 재생 버튼 ── */
+.control-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .btn-main {
   background: #00c853;
   color: white;
   border: none;
-  padding: 10px 30px;
+  padding: 10px 28px;
   border-radius: 50px;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 200, 83, 0.2);
+  box-shadow: 0 3px 12px rgba(0, 200, 83, 0.25);
   transition: background 0.15s ease;
 }
 
 .btn-main.pause {
   background: #ff9100;
-  box-shadow: 0 4px 15px rgba(255, 145, 0, 0.2);
+  box-shadow: 0 3px 12px rgba(255, 145, 0, 0.25);
 }
 
 .btn-main:disabled {
@@ -85,11 +115,12 @@
 
 .btn-sub {
   background: white;
-  border: 1px solid #ddd;
-  padding: 10px 20px;
+  border: 1.5px solid #ddd;
+  padding: 9px 18px;
   border-radius: 50px;
-  margin-left: 10px;
+  font-size: 13px;
   cursor: pointer;
+  color: #555;
   transition: background 0.15s ease;
 }
 
@@ -102,23 +133,40 @@
   cursor: not-allowed;
 }
 
-/* ── 자동 스크롤 토글 ── */
-.scroll-toggle-btn {
+/* ── 도구 버튼 ── */
+.control-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-btn {
   padding: 6px 14px;
   border-radius: 20px;
   border: 1.5px solid #ddd;
   background: #f9f9f9;
-  color: #666;
-  font-size: 13px;
+  color: #555;
+  font-size: 12px;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s ease;
 }
 
-.scroll-toggle-btn.active {
-  background: #e8f5e9;
-  border-color: #00c853;
-  color: #00875a;
+.tool-btn:hover:not(:disabled) {
+  border-color: #009688;
+  color: #009688;
+}
+
+.tool-btn.active {
+  background: #e0f2f1;
+  border-color: #009688;
+  color: #00695c;
   font-weight: 600;
+}
+
+.tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ── 진행 바 ── */
@@ -127,8 +175,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 40px;
-  height: 36px;
+  padding: 0 32px;
+  height: 34px;
   background: white;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -150,7 +198,7 @@
 
 .progress-label {
   font-size: 12px;
-  color: #888;
+  color: #999;
   white-space: nowrap;
   min-width: 80px;
   text-align: right;
@@ -167,6 +215,7 @@
 }
 
 .osmd-container-wrapper {
+  position: relative;
   background: white;
   width: 100%;
   max-width: 1000px;
@@ -181,6 +230,21 @@
 
 .osmd-canvas-container {
   width: 100%;
+}
+
+/* ── 계이름 갱신 오버레이 ── */
+.reloading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #009688;
+  border-radius: 12px;
+  z-index: 5;
 }
 
 /* ── 에러 ── */
