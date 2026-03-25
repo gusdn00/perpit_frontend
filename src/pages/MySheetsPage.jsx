@@ -58,7 +58,7 @@ function MySheetsPage() {
     // body에 직접 붙이는 임시 컨테이너 (레이아웃 계산이 정상 동작하도록 화면 밖에 위치)
     const tempContainer = document.createElement('div');
     tempContainer.style.cssText =
-      'position:fixed;top:0;left:0;width:900px;background:white;opacity:0;pointer-events:none;z-index:-9999;';
+      'position:fixed;top:0;left:-9999px;width:900px;background:white;pointer-events:none;';
     document.body.appendChild(tempContainer);
 
     try {
