@@ -96,24 +96,57 @@ function MySheetsPage() {
         logging: false,
       });
 
-      // 5. A4 기준으로 PDF 페이지 분할
+      // 5. 악보 시스템 경계(흰 행)에서 페이지를 나누는 스마트 분할
       const A4_W = 595.28; // pt
       const A4_H = 841.89; // pt
-      const imgW = A4_W;
-      const imgH = (canvas.height * A4_W) / canvas.width;
+
+      // A4 높이에 해당하는 캔버스 픽셀 수
+      const pageHeightPx = Math.round((A4_H / A4_W) * canvas.width);
+      const ctx2d = canvas.getContext('2d');
+
+      // targetY 위쪽으로 흰 행(악보 사이 공백)을 찾아 반환
+      const findCutY = (targetY) => {
+        const searchRange = Math.min(200, targetY);
+        for (let y = targetY; y >= targetY - searchRange; y--) {
+          const row = ctx2d.getImageData(0, y, canvas.width, 1).data;
+          let isWhite = true;
+          // 10픽셀 간격으로 샘플링 (속도 최적화)
+          for (let x = 0; x < row.length; x += 40) {
+            if (row[x] < 240 || row[x + 1] < 240 || row[x + 2] < 240) {
+              isWhite = false;
+              break;
+            }
+          }
+          if (isWhite) return y;
+        }
+        return targetY; // 흰 행을 못 찾으면 원래 위치에서 자르기
+      };
 
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-      let remaining = imgH;
-      let offset = 0;
+      let pageStart = 0;
       let firstPage = true;
 
-      while (remaining > 0) {
+      while (pageStart < canvas.height) {
         if (!firstPage) pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, -offset, imgW, imgH);
-        remaining -= A4_H;
-        offset += A4_H;
+
+        const idealEnd = pageStart + pageHeightPx;
+        const cutY = idealEnd >= canvas.height
+          ? canvas.height
+          : findCutY(idealEnd);
+        const sliceH = cutY - pageStart;
+
+        // 각 페이지 슬라이스를 A4 크기 캔버스에 그리기 (남는 부분은 흰 배경)
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = pageHeightPx;
+        const pageCtx = pageCanvas.getContext('2d');
+        pageCtx.fillStyle = '#ffffff';
+        pageCtx.fillRect(0, 0, canvas.width, pageHeightPx);
+        pageCtx.drawImage(canvas, 0, pageStart, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+
+        pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, A4_W, A4_H);
+
+        pageStart = cutY;
         firstPage = false;
       }
 
