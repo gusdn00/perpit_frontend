@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSearch, FiDownload, FiTrash2, FiRefreshCw } from 'react-icons/fi';
 import { FaPlayCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,6 @@ function MySheetsPage() {
   const [remixLoading, setRemixLoading] = useState(false);
   const [downloadSheet, setDownloadSheet] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const hiddenOsmdRef = useRef(null);
 
   useEffect(() => {
     const fetchMySheets = async () => {
@@ -51,10 +50,29 @@ function MySheetsPage() {
     setDownloadSheet(null);
   };
 
+  /* ── SVG 크기 추출 헬퍼 ── */
+  const getSvgSize = (svg) => {
+    const rect = svg.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) return { w: rect.width, h: rect.height };
+    const vb = svg.viewBox?.baseVal;
+    if (vb?.width > 0 && vb?.height > 0) return { w: vb.width, h: vb.height };
+    const w = parseFloat(svg.getAttribute('width'));
+    const h = parseFloat(svg.getAttribute('height'));
+    if (w > 0 && h > 0) return { w, h };
+    return { w: 900, h: 1200 };
+  };
+
   /* ── PDF 다운로드 ── */
   const handleDownloadPDF = async () => {
     if (!downloadSheet) return;
     setPdfLoading(true);
+
+    // body에 직접 붙이는 임시 컨테이너 (getBoundingClientRect가 정상 동작)
+    const tempContainer = document.createElement('div');
+    tempContainer.style.cssText =
+      'position:fixed;top:0;left:0;width:900px;background:white;opacity:0;pointer-events:none;z-index:-9999;';
+    document.body.appendChild(tempContainer);
+
     try {
       // 1. MusicXML 가져오기
       const res = await axiosInstance.get(
@@ -62,16 +80,13 @@ function MySheetsPage() {
         { responseType: 'text' }
       );
 
-      // 2. 라이브러리 동적 로드 (초기 번들 크기 절약)
+      // 2. 라이브러리 동적 로드
       const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay');
       const { jsPDF } = await import('jspdf');
       const { default: svg2pdf } = await import('svg2pdf.js');
 
-      // 3. 숨김 컨테이너에 OSMD 렌더링
-      const container = hiddenOsmdRef.current;
-      container.innerHTML = '';
-
-      const osmd = new OpenSheetMusicDisplay(container, {
+      // 3. OSMD 렌더링
+      const osmd = new OpenSheetMusicDisplay(tempContainer, {
         autoResize: false,
         backend: 'svg',
       });
@@ -79,55 +94,37 @@ function MySheetsPage() {
       osmd.render();
 
       // 렌더링 완료 대기
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 500));
 
-      // 4. SVG 요소 수집 (OSMD는 시스템별 SVG 생성)
-      const svgElements = [...container.querySelectorAll('svg')];
-      if (svgElements.length === 0) throw new Error('SVG 렌더링 실패');
+      // 4. SVG 수집
+      const svgElements = [...tempContainer.querySelectorAll('svg')];
+      if (svgElements.length === 0) throw new Error('SVG를 찾을 수 없습니다 (OSMD 렌더링 실패)');
 
-      // 5. A4 기준으로 PDF 생성
-      const A4_W = 595.28; // pt
-      const A4_H = 841.89; // pt
+      // 5. PDF 생성 (A4, 여백 28pt)
+      const A4_W = 595.28;
+      const A4_H = 841.89;
+      const margin = 28;
+      const drawW = A4_W - margin * 2;
 
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 
       for (let i = 0; i < svgElements.length; i++) {
         if (i > 0) pdf.addPage();
         const svg = svgElements[i];
-
-        // SVG 실제 크기 계산 (여러 방법으로 폴백)
-        const rect = svg.getBoundingClientRect();
-        const vb = svg.viewBox?.baseVal;
-        const svgW = (rect.width > 0 ? rect.width : null)
-          ?? (vb?.width > 0 ? vb.width : null)
-          ?? parseFloat(svg.getAttribute('width'))
-          ?? 900;
-        const svgH = (rect.height > 0 ? rect.height : null)
-          ?? (vb?.height > 0 ? vb.height : null)
-          ?? parseFloat(svg.getAttribute('height'))
-          ?? 1200;
-
-        // 여백 포함해서 A4에 맞춤
-        const margin = 28; // pt (약 1cm)
-        const drawW = A4_W - margin * 2;
+        const { w: svgW, h: svgH } = getSvgSize(svg);
         const scale = drawW / svgW;
-        const drawH = svgH * scale;
+        const drawH = Math.min(svgH * scale, A4_H - margin * 2);
 
-        // 한 페이지에 들어오지 않으면 비율 유지하며 높이 제한
-        const finalH = Math.min(drawH, A4_H - margin * 2);
-        const finalW = finalH === A4_H - margin * 2
-          ? (A4_H - margin * 2) / svgH * svgW
-          : drawW;
-
-        await svg2pdf(svg, pdf, { x: margin, y: margin, width: finalW, height: finalH });
+        await svg2pdf(svg, pdf, { x: margin, y: margin, width: drawW, height: drawH });
       }
 
       pdf.save(`${downloadSheet.name || 'sheet'}.pdf`);
       setDownloadSheet(null);
     } catch (err) {
-      console.error(err);
-      alert('PDF 생성에 실패했습니다.');
+      console.error('PDF 생성 오류:', err);
+      alert(`PDF 생성에 실패했습니다.\n\n오류: ${err.message}`);
     } finally {
+      document.body.removeChild(tempContainer);
       setPdfLoading(false);
     }
   };
@@ -171,19 +168,6 @@ function MySheetsPage() {
 
   return (
     <div className="my-sheets-screen">
-      {/* 숨김 OSMD 렌더링 컨테이너 (PDF 생성용) */}
-      <div
-        ref={hiddenOsmdRef}
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          top: 0,
-          width: '900px',
-          background: 'white',
-          pointerEvents: 'none',
-        }}
-      />
-
       {remixSheet && (
         <DifficultySelectModal
           sheet={remixSheet}
