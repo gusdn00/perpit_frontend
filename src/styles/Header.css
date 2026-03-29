@@ -3,11 +3,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding-left: 100px;
   padding-right: 30px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: padding-left 0.3s ease;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .sidebar.opened ~ .header {
@@ -32,33 +37,33 @@
 }
 
 .auth-btn {
-  height: 38px;
-  padding: 0 20px;
+  height: 36px;
+  padding: 0 18px;
   font-size: 14px;
   font-weight: 500;
-  border: 1.5px solid #009688;
+  border: 1.5px solid #007AFF;
   background: white;
-  color: #009688;
-  border-radius: 20px;
+  color: #007AFF;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .auth-btn:hover {
-  background-color: #009688;
+  background-color: #007AFF;
   color: white;
 }
 
-/* 사용자 이름 */
 .header-username {
   font-size: 14px;
   font-weight: 600;
-  color: #00695c;
+  color: #007AFF;
   padding: 0 8px;
   align-self: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* 토큰 잔액 */
 .token-balance-link {
   text-decoration: none;
 }
@@ -67,16 +72,16 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  height: 38px;
+  height: 36px;
   padding: 0 14px;
-  background: #e0f2f1;
-  border-radius: 20px;
+  background: #EBF3FF;
+  border-radius: 12px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .token-balance:hover {
-  background: #b2dfdb;
+  background: #D6E8FF;
 }
 
 .token-icon {
@@ -86,5 +91,5 @@
 .token-count {
   font-size: 14px;
   font-weight: 600;
-  color: #00695c;
+  color: #007AFF;
 }

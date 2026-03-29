@@ -10,25 +10,26 @@
 
 .modal-box {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 32px 28px;
   width: 340px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .modal-title {
   font-size: 18px;
   font-weight: 700;
-  color: #222;
+  color: #000000;
   margin: 0;
 }
 
 .modal-sheet-name {
   font-size: 13px;
-  color: #666;
+  color: #8E8E93;
   margin: -12px 0 0;
   white-space: nowrap;
   overflow: hidden;
@@ -44,7 +45,7 @@
 .modal-label {
   font-size: 13px;
   font-weight: 600;
-  color: #444;
+  color: #3C3C43;
 }
 
 .modal-options {
@@ -55,23 +56,25 @@
 
 .modal-option-btn {
   padding: 6px 16px;
-  border-radius: 20px;
-  border: 1.5px solid #ddd;
-  background: #f9f9f9;
-  color: #555;
+  border-radius: 12px;
+  border: 1.5px solid #E5E5EA;
+  background: #F2F2F7;
+  color: #3C3C43;
   font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
 .modal-option-btn:hover {
-  border-color: #009688;
-  color: #009688;
+  border-color: #007AFF;
+  color: #007AFF;
+  background: #EBF3FF;
 }
 
 .modal-option-btn.selected {
-  background: #009688;
-  border-color: #009688;
+  background: #007AFF;
+  border-color: #007AFF;
   color: #fff;
   font-weight: 600;
 }
@@ -84,31 +87,32 @@
 }
 
 .modal-btn {
-  padding: 8px 22px;
-  border-radius: 8px;
+  padding: 10px 22px;
+  border-radius: 12px;
   border: none;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   transition: background 0.18s ease;
 }
 
 .modal-btn.cancel {
-  background: #f0f0f0;
-  color: #666;
+  background: #F2F2F7;
+  color: #3C3C43;
 }
 
 .modal-btn.cancel:hover {
-  background: #e0e0e0;
+  background: #E5E5EA;
 }
 
 .modal-btn.confirm {
-  background: #009688;
+  background: #007AFF;
   color: #fff;
 }
 
 .modal-btn.confirm:hover {
-  background: #00796b;
+  background: #0056CC;
 }
 
 .modal-btn:disabled {

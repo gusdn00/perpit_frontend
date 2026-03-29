@@ -21,6 +21,7 @@
   color: #aaa;
   font-size: 20px;
   cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .sidebar-content {
@@ -35,21 +36,25 @@
   font-size: 16px;
   color: white;
   margin-bottom: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .sidebar-btn {
   width: 100%;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: none;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
   margin-bottom: 12px;
   cursor: pointer;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background 0.2s ease;
 }
 
 .sidebar-btn:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .payment-sidebar-btn {
@@ -65,4 +70,5 @@
   display: flex;
   justify-content: space-between;
   color: #888;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

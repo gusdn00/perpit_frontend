@@ -4,16 +4,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #F2F2F7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .converting-card {
   width: 480px;
   padding: 48px 40px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -24,8 +24,8 @@
 .converting-spinner {
   width: 56px;
   height: 56px;
-  border: 4px solid #e0f2f1;
-  border-top-color: #009688;
+  border: 4px solid #EBF3FF;
+  border-top-color: #007AFF;
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
 }
@@ -36,15 +36,15 @@
 
 .converting-title {
   font-size: 22px;
-  font-weight: 600;
-  color: #222;
+  font-weight: 700;
+  color: #000000;
   margin: 0;
 }
 
 .converting-status {
   display: inline-block;
-  background: #e0f2f1;
-  color: #009688;
+  background: #EBF3FF;
+  color: #007AFF;
   font-size: 13px;
   font-weight: 600;
   padding: 4px 14px;
@@ -54,21 +54,21 @@
 .progress-bar {
   width: 100%;
   height: 8px;
-  background-color: #e0e0e0;
+  background-color: #E5E5EA;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #009688;
+  background-color: #007AFF;
   border-radius: 10px;
   transition: width 0.3s ease;
 }
 
 .desc-text {
   font-size: 13px;
-  color: #888;
+  color: #8E8E93;
   line-height: 1.7;
   margin: 0;
 }
