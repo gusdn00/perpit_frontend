@@ -85,6 +85,13 @@
   text-overflow: ellipsis;
 }
 
+.sheet-instrument {
+  font-size: 12px;
+  color: #8E8E93;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
 .sheet-icons {
   display: flex;
   gap: 12px;

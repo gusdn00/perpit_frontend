@@ -9,7 +9,8 @@
       "Bash(node:*)",
       "Bash(rm:*)",
       "Bash(grep -E \"\\\\.d\\\\.ts$\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:www.perpit.kr)"
     ]
   }
 }

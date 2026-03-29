@@ -12,6 +12,7 @@ function FileUpload() {
   const [purpose, setPurpose] = useState('accompaniment'); // accompaniment | performance
   const [style, setStyle] = useState('original');          // rock | ballad | original
   const [difficulty, setDifficulty] = useState('easy');    // easy | normal
+  const [instrument, setInstrument] = useState('piano');   // piano | guitar
 
   useEffect(() => {
     axiosInstance.get('/payment/balance')
@@ -41,6 +42,11 @@ function FileUpload() {
     normal: 2,
   };
 
+  const instrumentMap = {
+    piano: 1,
+    guitar: 2,
+  };
+
   const handleSubmit = async () => {
     if (!file || !songName) {
       alert('파일과 곡 이름을 입력해주세요.');
@@ -53,6 +59,7 @@ function FileUpload() {
     formData.append('purpose', purposeMap[purpose]);
     formData.append('style', styleMap[style]);
     formData.append('difficulty', difficultyMap[difficulty]);
+    formData.append('instrument', instrumentMap[instrument]);
 
     try {
       // ✅ 악보 생성 요청 (즉시 응답)
@@ -159,6 +166,25 @@ function FileUpload() {
                 onClick={() => setStyle('original')}
               >
                 Original
+              </button>
+            </div>
+          </div>
+
+          {/* 악기 */}
+          <div className="section">
+            <h3>Instrument</h3>
+            <div className="toggle-group">
+              <button
+                className={instrument === 'piano' ? 'toggle-btn selected' : 'toggle-btn'}
+                onClick={() => setInstrument('piano')}
+              >
+                Piano
+              </button>
+              <button
+                className={instrument === 'guitar' ? 'toggle-btn selected' : 'toggle-btn'}
+                onClick={() => setInstrument('guitar')}
+              >
+                Guitar
               </button>
             </div>
           </div>
