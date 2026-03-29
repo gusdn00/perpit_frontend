@@ -126,6 +126,25 @@ function FileUpload() {
         {/* 우측 */}
         <div className="right-panel">
 
+          {/* 악기 */}
+          <div className="section">
+            <h3>Instrument</h3>
+            <div className="toggle-group">
+              <button
+                className={instrument === 'piano' ? 'toggle-btn selected' : 'toggle-btn'}
+                onClick={() => setInstrument('piano')}
+              >
+                Piano
+              </button>
+              <button
+                className={instrument === 'guitar' ? 'toggle-btn selected' : 'toggle-btn'}
+                onClick={() => setInstrument('guitar')}
+              >
+                Guitar
+              </button>
+            </div>
+          </div>
+
           {/* 용도 */}
           <div className="section">
             <h3>Purpose</h3>
@@ -166,25 +185,6 @@ function FileUpload() {
                 onClick={() => setStyle('original')}
               >
                 Original
-              </button>
-            </div>
-          </div>
-
-          {/* 악기 */}
-          <div className="section">
-            <h3>Instrument</h3>
-            <div className="toggle-group">
-              <button
-                className={instrument === 'piano' ? 'toggle-btn selected' : 'toggle-btn'}
-                onClick={() => setInstrument('piano')}
-              >
-                Piano
-              </button>
-              <button
-                className={instrument === 'guitar' ? 'toggle-btn selected' : 'toggle-btn'}
-                onClick={() => setInstrument('guitar')}
-              >
-                Guitar
               </button>
             </div>
           </div>

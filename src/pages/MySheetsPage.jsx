@@ -234,11 +234,6 @@ function MySheetsPage() {
                   </div>
                 </div>
                 <p className="sheet-name">{sheet.name}</p>
-                {sheet.instrument && (
-                  <p className="sheet-instrument">
-                    {sheet.instrument === 1 || sheet.instrument === 'piano' ? '🎹 Piano' : '🎸 Guitar'}
-                  </p>
-                )}
                 <div className="sheet-icons">
                   <button onClick={() => handleView(sheet.sid)}><FiSearch size={20} /></button>
                   <button onClick={() => setDownloadSheet(sheet)}><FiDownload size={20} /></button>
