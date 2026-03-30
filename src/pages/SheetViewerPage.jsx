@@ -223,14 +223,27 @@ function SheetViewerPage() {
     osmdRef.current = osmd;
     await osmd.load(xmlText);
     osmd.render();
-    console.log('[DEBUG] Instruments:', osmd.Sheet?.Instruments?.map(i => ({
-      name: i.Name, midiId: i.MidiInstrumentId
-    })));
     setTotalMeasures(osmd.Sheet?.SourceMeasures?.length ?? 0);
 
     const player = new AudioPlayer();
     playerRef.current = player;
     await player.loadScore(osmd);
+    // osmd-audio-player 버그 우회: 괄호 포함 악기명("Acoustic Guitar (nylon)") → 매칭 실패 → 피아노 폴백
+    // TAB 악보일 때 soundfont-player로 직접 기타 soundfont 주입
+    if (isTabRef.current) {
+      try {
+        const Soundfont = await import('soundfont-player');
+        const guitarSf = await Soundfont.default.instrument(player.ac, 'acoustic_guitar_nylon');
+        // 1) 기타 soundfont를 key 24에 주입
+        player.instrumentPlayer.players.set(24, guitarSf);
+        // 2) fallbackToPiano()가 voice midiInstrumentId를 0으로 바꿔버렸을 수 있으므로 강제로 24로 복원
+        player.sheet?.Instruments?.forEach(inst => {
+          inst.Voices?.forEach(v => { v.midiInstrumentId = 24; });
+        });
+      } catch (e) {
+        console.warn('Guitar soundfont load failed:', e);
+      }
+    }
 
     const scoreBpm = player.playbackSettings?.bpm ?? 120;
     if (!keepBpm) { bpmRef.current = scoreBpm; setBpm(scoreBpm); }
