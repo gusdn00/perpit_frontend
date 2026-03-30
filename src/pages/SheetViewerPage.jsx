@@ -136,11 +136,12 @@ function injectSolfege(xmlText) {
   } catch { return xmlText; }
 }
 
-/* ── 변환 적용 순서: 전조 → 계이름 ── */
-function buildXml(originalXml, semitones, solfege) {
+/* ── 변환 적용 순서: 기타MIDI → 전조 → 계이름 ── */
+function buildXml(originalXml, semitones, solfege, isTab = false) {
   let xml = originalXml;
-  if (semitones !== 0) xml = transposeXML(xml, semitones);
-  if (solfege)          xml = injectSolfege(xml);
+  if (isTab)             xml = injectGuitarMidi(xml);
+  if (semitones !== 0)   xml = transposeXML(xml, semitones);
+  if (solfege && !isTab) xml = injectSolfege(xml);
   return xml;
 }
 
@@ -151,6 +152,30 @@ function sanitizeMusicXML(xml) {
     .replace(/<!DOCTYPE[^>]*>/gi, '')
     .trim()
     .replace(/<part-name\s*\/>/gi, '<part-name>Music</part-name>');
+}
+
+/* ── TAB 악보 감지 ── */
+function detectTab(xmlText) {
+  return /<sign>\s*TAB\s*<\/sign>/i.test(xmlText);
+}
+
+/* ── 기타 MIDI 음색 주입 (TAB 악보용) ── */
+function injectGuitarMidi(xmlText) {
+  try {
+    const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+    doc.querySelectorAll('score-part').forEach((part) => {
+      if (part.querySelector('midi-instrument')) return;
+      const partId = part.getAttribute('id') ?? 'P1';
+      const midi = doc.createElement('midi-instrument');
+      midi.setAttribute('id', `${partId}-I1`);
+      const ch   = doc.createElement('midi-channel');  ch.textContent   = '1';
+      const prog = doc.createElement('midi-program');   prog.textContent = '26'; // Acoustic Guitar Steel
+      midi.appendChild(ch);
+      midi.appendChild(prog);
+      part.appendChild(midi);
+    });
+    return new XMLSerializer().serializeToString(doc);
+  } catch { return xmlText; }
 }
 
 /* ════════════════════════════════
@@ -165,6 +190,7 @@ function SheetViewerPage() {
   const transposeRef       = useRef(0);
   const solfegeRef         = useRef(false);
   const autoScrollRef      = useRef(false);
+  const isTabRef           = useRef(false);
   const metronomeCtxRef      = useRef(null);
   const metronomeIdRef       = useRef(null);
   const metronomeNextNoteRef = useRef(0);
@@ -180,6 +206,7 @@ function SheetViewerPage() {
   const [metronomeOn,      setMetronomeOn]       = useState(false);
   const [solfegeOn,        setSolfegeOn]         = useState(false);
   const [autoScroll,       setAutoScroll]        = useState(false);
+  const [isTabScore,       setIsTabScore]        = useState(false);
   const [currentMeasure,   setCurrentMeasure]    = useState(0);
   const [totalMeasures,    setTotalMeasures]     = useState(0);
 
@@ -196,6 +223,9 @@ function SheetViewerPage() {
     osmdRef.current = osmd;
     await osmd.load(xmlText);
     osmd.render();
+    console.log('[DEBUG] Instruments:', osmd.Sheet?.Instruments?.map(i => ({
+      name: i.Name, midiId: i.MidiInstrumentId
+    })));
     setTotalMeasures(osmd.Sheet?.SourceMeasures?.length ?? 0);
 
     const player = new AudioPlayer();
@@ -238,7 +268,7 @@ function SheetViewerPage() {
     setReloading(true);
     playerRef.current?.stop();
     try {
-      await setupOSMD(buildXml(originalXmlRef.current, semitones, solfege), true);
+      await setupOSMD(buildXml(originalXmlRef.current, semitones, solfege, isTabRef.current), true);
     } finally {
       setReloading(false);
     }
@@ -263,7 +293,10 @@ function SheetViewerPage() {
         const cleanedXml = sanitizeMusicXML(res.data);
         originalXmlRef.current = cleanedXml;
         setOriginalFifths(detectFifths(cleanedXml));
-        await setupOSMD(cleanedXml);
+        const tab = detectTab(cleanedXml);
+        isTabRef.current = tab;
+        setIsTabScore(tab);
+        await setupOSMD(buildXml(cleanedXml, 0, false, tab));
       } catch (err) {
         console.error(err);
         setError('악보 로드 실패');
@@ -432,7 +465,7 @@ function SheetViewerPage() {
           <button className={`tool-btn ${metronomeOn ? 'active' : ''}`} onClick={toggleMetronome} disabled={disabled}>
             🥁 메트로놈
           </button>
-          <button className={`tool-btn ${solfegeOn ? 'active' : ''}`} onClick={toggleSolfege} disabled={disabled}>
+          <button className={`tool-btn ${solfegeOn ? 'active' : ''}`} onClick={toggleSolfege} disabled={disabled || isTabScore} title={isTabScore ? 'TAB 악보에서는 사용 불가' : ''}>
             {reloading ? '...' : '🎵 계이름'}
           </button>
           <button className={`tool-btn ${autoScroll ? 'active' : ''}`} onClick={toggleAutoScroll}>

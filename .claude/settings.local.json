@@ -10,7 +10,10 @@
       "Bash(rm:*)",
       "Bash(grep -E \"\\\\.d\\\\.ts$\")",
       "Bash(npm install:*)",
-      "WebFetch(domain:www.perpit.kr)"
+      "WebFetch(domain:www.perpit.kr)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
