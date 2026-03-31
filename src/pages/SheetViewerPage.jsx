@@ -151,7 +151,9 @@ function sanitizeMusicXML(xml) {
   return xml
     .replace(/<!DOCTYPE[^>]*>/gi, '')
     .trim()
-    .replace(/<part-name\s*\/>/gi, '<part-name>Music</part-name>');
+    .replace(/<part-name\s*\/>/gi, '<part-name>Music</part-name>')
+    // 자동생성 악기명(Instr. P + hex hash) 제거
+    .replace(/Instr\.\s*P[0-9a-f]{20,}/gi, '');
 }
 
 /* ── TAB 악보 감지 ── */
