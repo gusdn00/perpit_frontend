@@ -72,9 +72,6 @@ function MySheetsPage() {
       const { jsPDF } = await import('jspdf');
       const { default: html2canvas } = await import('html2canvas');
 
-      // 자동생성 악기명(Instr. P + hex hash) 제거
-      const cleanedXml = res.data.replace(/Instr\.\s*P[0-9a-f]{20,}/gi, '');
-
       // 3. OSMD를 A4 페이지 포맷으로 렌더링 → OSMD가 시스템 경계에서 직접 페이지 분할
       const osmd = new OpenSheetMusicDisplay(tempContainer, {
         autoResize: false,
@@ -82,7 +79,7 @@ function MySheetsPage() {
         pageFormat: 'A4_P',
         pageBackgroundColor: '#FFFFFF',
       });
-      await osmd.load(cleanedXml);
+      await osmd.load(res.data);
       osmd.render();
       await new Promise(r => setTimeout(r, 800));
 
