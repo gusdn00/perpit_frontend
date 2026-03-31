@@ -17,13 +17,19 @@ const DIFFICULTY_OPTIONS = [
   { value: 2, label: 'Normal' },
 ];
 
+const INSTRUMENT_OPTIONS = [
+  { value: 1, label: 'Piano' },
+  { value: 2, label: 'Guitar' },
+];
+
 function DifficultySelectModal({ sheet, onConfirm, onClose, loading }) {
   const [purpose, setPurpose] = useState(1);
   const [style, setStyle] = useState(1);
   const [difficulty, setDifficulty] = useState(1);
+  const [instrument, setInstrument] = useState(1);
 
   const handleConfirm = () => {
-    onConfirm({ purpose, style, difficulty });
+    onConfirm({ purpose, style, difficulty, instrument });
   };
 
   return (
@@ -70,6 +76,21 @@ function DifficultySelectModal({ sheet, onConfirm, onClose, loading }) {
                 key={opt.value}
                 className={`modal-option-btn ${difficulty === opt.value ? 'selected' : ''}`}
                 onClick={() => setDifficulty(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="modal-section">
+          <span className="modal-label">악기</span>
+          <div className="modal-options">
+            {INSTRUMENT_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                className={`modal-option-btn ${instrument === opt.value ? 'selected' : ''}`}
+                onClick={() => setInstrument(opt.value)}
               >
                 {opt.label}
               </button>

@@ -161,13 +161,14 @@ function MySheetsPage() {
     }
   };
 
-  const handleRemixConfirm = async ({ purpose, style, difficulty }) => {
+  const handleRemixConfirm = async ({ purpose, style, difficulty, instrument }) => {
     setRemixLoading(true);
     try {
       const res = await axiosInstance.post(`/create_sheets/mysheets/${remixSheet.sid}/remix`, {
         purpose,
         style,
         difficulty,
+        instrument,
       });
       const jobId = res.data.jobId ?? res.data.job_id;
       setRemixSheet(null);
