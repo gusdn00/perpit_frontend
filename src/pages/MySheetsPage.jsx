@@ -55,7 +55,6 @@ function MySheetsPage() {
     if (!downloadSheet) return;
     setPdfLoading(true);
 
-    // body에 직접 붙이는 임시 컨테이너 (레이아웃 계산이 정상 동작하도록 화면 밖에 위치)
     const tempContainer = document.createElement('div');
     tempContainer.style.cssText =
       'position:fixed;top:0;left:-9999px;width:900px;background:white;pointer-events:none;';
@@ -73,81 +72,40 @@ function MySheetsPage() {
       const { jsPDF } = await import('jspdf');
       const { default: html2canvas } = await import('html2canvas');
 
-      // 3. OSMD 렌더링
+      // 3. OSMD를 A4 페이지 포맷으로 렌더링 → OSMD가 시스템 경계에서 직접 페이지 분할
       const osmd = new OpenSheetMusicDisplay(tempContainer, {
         autoResize: false,
         backend: 'svg',
+        pageFormat: 'A4_P',
+        pageBackgroundColor: '#FFFFFF',
       });
       await osmd.load(res.data);
       osmd.render();
+      await new Promise(r => setTimeout(r, 800));
 
-      // 렌더링 완료 대기
-      await new Promise(r => setTimeout(r, 500));
+      // 4. OSMD가 생성한 페이지 요소 수집 (SVG 또는 div wrapper)
+      //    pageFormat 사용 시 각 페이지가 별도 자식 요소로 렌더링됨
+      const svgEls = Array.from(tempContainer.querySelectorAll(':scope > svg'));
+      const pageEls = svgEls.length > 0
+        ? svgEls
+        : Array.from(tempContainer.children);
 
-      if (!tempContainer.querySelector('svg')) {
-        throw new Error('OSMD 렌더링 실패: SVG를 찾을 수 없습니다');
-      }
+      if (pageEls.length === 0) throw new Error('렌더링된 페이지를 찾을 수 없습니다.');
 
-      // 4. html2canvas로 캡처 (scale:2 = 고해상도)
-      const canvas = await html2canvas(tempContainer, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false,
-      });
-
-      // 5. 악보 시스템 경계(흰 행)에서 페이지를 나누는 스마트 분할
-      const A4_W = 595.28; // pt
-      const A4_H = 841.89; // pt
-
-      // A4 높이에 해당하는 캔버스 픽셀 수
-      const pageHeightPx = Math.round((A4_H / A4_W) * canvas.width);
-      const ctx2d = canvas.getContext('2d');
-
-      // targetY 위쪽으로 흰 행(악보 사이 공백)을 찾아 반환
-      const findCutY = (targetY) => {
-        const searchRange = Math.min(200, targetY);
-        for (let y = targetY; y >= targetY - searchRange; y--) {
-          const row = ctx2d.getImageData(0, y, canvas.width, 1).data;
-          let isWhite = true;
-          // 10픽셀 간격으로 샘플링 (속도 최적화)
-          for (let x = 0; x < row.length; x += 40) {
-            if (row[x] < 240 || row[x + 1] < 240 || row[x + 2] < 240) {
-              isWhite = false;
-              break;
-            }
-          }
-          if (isWhite) return y;
-        }
-        return targetY; // 흰 행을 못 찾으면 원래 위치에서 자르기
-      };
-
+      const A4_W = 595.28;
+      const A4_H = 841.89;
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-      let pageStart = 0;
-      let firstPage = true;
 
-      while (pageStart < canvas.height) {
-        if (!firstPage) pdf.addPage();
-
-        const idealEnd = pageStart + pageHeightPx;
-        const cutY = idealEnd >= canvas.height
-          ? canvas.height
-          : findCutY(idealEnd);
-        const sliceH = cutY - pageStart;
-
-        // 각 페이지 슬라이스를 A4 크기 캔버스에 그리기 (남는 부분은 흰 배경)
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = pageHeightPx;
-        const pageCtx = pageCanvas.getContext('2d');
-        pageCtx.fillStyle = '#ffffff';
-        pageCtx.fillRect(0, 0, canvas.width, pageHeightPx);
-        pageCtx.drawImage(canvas, 0, pageStart, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-
-        pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, A4_W, A4_H);
-
-        pageStart = cutY;
-        firstPage = false;
+      // 5. 각 페이지를 개별 캡처 → PDF에 추가
+      for (const [i, pageEl] of pageEls.entries()) {
+        if (i > 0) pdf.addPage();
+        const canvas = await html2canvas(pageEl, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+        });
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, A4_W, A4_H);
       }
 
       pdf.save(`${downloadSheet.name || 'sheet'}.pdf`);
