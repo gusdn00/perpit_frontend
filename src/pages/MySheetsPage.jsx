@@ -1,89 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSearch, FiDownload, FiTrash2, FiRefreshCw } from 'react-icons/fi';
 import { FaPlayCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import '../styles/MySheetsPage.css';
+import sampleSheet from '../assets/sample.png';
 import DifficultySelectModal from './DifficultySelectModal';
 import DownloadFormatModal from './DownloadFormatModal';
-
-/* ── 악보 첫 페이지 썸네일 컴포넌트 ── */
-function SheetThumbnail({ sid, name, onClick }) {
-  const [thumbUrl, setThumbUrl]     = useState(() => sessionStorage.getItem(`thumb_${sid}`));
-  const [generating, setGenerating] = useState(false);
-  const wrapperRef                  = useRef(null);
-
-  useEffect(() => {
-    if (thumbUrl) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-      generate();
-    }, { threshold: 0.1 });
-    if (wrapperRef.current) observer.observe(wrapperRef.current);
-    return () => observer.disconnect();
-  }, [sid]);
-
-  const generate = async () => {
-    setGenerating(true);
-    const container = document.createElement('div');
-    container.style.cssText =
-      'position:fixed;top:0;left:-9999px;width:700px;background:white;pointer-events:none;';
-    document.body.appendChild(container);
-    try {
-      const res = await axiosInstance.get(
-        `/create_sheets/mysheets/${sid}/view`,
-        { responseType: 'text' }
-      );
-      const { OpenSheetMusicDisplay } = await import('opensheetmusicdisplay');
-      const { default: html2canvas }  = await import('html2canvas');
-
-      const osmd = new OpenSheetMusicDisplay(container, {
-        autoResize: false,
-        backend: 'svg',
-        pageFormat: 'A4_P',
-        pageBackgroundColor: '#FFFFFF',
-      });
-      await osmd.load(res.data);
-      osmd.render();
-      await new Promise(r => setTimeout(r, 600));
-
-      const firstPage =
-        container.querySelector(':scope > svg') ?? container.firstElementChild;
-      if (!firstPage) return;
-
-      const canvas = await html2canvas(firstPage, {
-        scale: 1,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false,
-      });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-      sessionStorage.setItem(`thumb_${sid}`, dataUrl);
-      setThumbUrl(dataUrl);
-    } catch (e) {
-      console.warn('썸네일 생성 실패:', e);
-    } finally {
-      document.body.removeChild(container);
-      setGenerating(false);
-    }
-  };
-
-  return (
-    <div ref={wrapperRef} className="sheet-img-wrapper" onClick={onClick}>
-      {thumbUrl ? (
-        <img src={thumbUrl} alt={name} className="sheet-card-img" />
-      ) : (
-        <div className="sheet-thumb-placeholder">
-          {generating ? <span className="thumb-spinner" /> : '🎵'}
-        </div>
-      )}
-      <div className="overlay">
-        <FaPlayCircle size={40} className="play-icon" />
-      </div>
-    </div>
-  );
-}
 
 function MySheetsPage() {
   const navigate = useNavigate();
@@ -263,11 +186,12 @@ function MySheetsPage() {
           <div className="sheet-list">
             {sheets.map(sheet => (
               <div key={sheet.sid} className="sheet-card">
-                <SheetThumbnail
-                  sid={sheet.sid}
-                  name={sheet.name}
-                  onClick={() => handleView(sheet.sid)}
-                />
+                <div className="sheet-img-wrapper" onClick={() => handleView(sheet.sid)}>
+                  <img src={sampleSheet} alt={sheet.name} className="sheet-card-img" />
+                  <div className="overlay">
+                    <FaPlayCircle size={40} className="play-icon" />
+                  </div>
+                </div>
                 <p className="sheet-name">{sheet.name}</p>
                 <div className="sheet-icons">
                   <button onClick={() => handleView(sheet.sid)}><FiSearch size={20} /></button>
