@@ -47,9 +47,19 @@ function FileUpload() {
     guitar: 2,
   };
 
+  const handleInsufficientTokens = () => {
+    alert('토큰 잔액이 부족합니다. 충전 후 이용해주세요.');
+    navigate('/payment');
+  };
+
   const handleSubmit = async () => {
     if (!file || !songName) {
       alert('파일과 곡 이름을 입력해주세요.');
+      return;
+    }
+
+    if (tokenBalance !== null && tokenBalance <= 0) {
+      handleInsufficientTokens();
       return;
     }
 
@@ -62,7 +72,6 @@ function FileUpload() {
     formData.append('instrument', instrumentMap[instrument]);
 
     try {
-      // ✅ 악보 생성 요청 (즉시 응답)
       const res = await axiosInstance.post('/create_sheets', formData);
       console.log(res.data);
       const { jobId } = res.data;
@@ -73,13 +82,18 @@ function FileUpload() {
       }
 
       navigate('/converting', {
-        state: { job_id: jobId }   // 프론트에서는 job_id로 통일
+        state: { job_id: jobId }
       });
-
 
     } catch (err) {
       console.error(err);
-      alert('악보 생성 요청에 실패했습니다.');
+      const status = err?.response?.status;
+      const msg    = err?.response?.data?.detail ?? err?.response?.data?.message ?? '';
+      if (status === 402 || /token|balance|credit/i.test(msg)) {
+        handleInsufficientTokens();
+      } else {
+        alert('악보 생성 요청에 실패했습니다.');
+      }
     }
   };
 

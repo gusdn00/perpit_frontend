@@ -259,7 +259,14 @@ function SheetViewerPage() {
       const idx  = iter?.CurrentMeasureIndex ?? iter?.currentMeasureIndex ?? 0;
       setCurrentMeasure(idx + 1);
       if (autoScrollRef.current) {
-        osmd.cursor.cursorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const scrollContainer = document.querySelector('.sheet-main-content');
+        const cursor = osmd.cursor.cursorElement;
+        if (scrollContainer && cursor) {
+          const containerRect = scrollContainer.getBoundingClientRect();
+          const cursorRect    = cursor.getBoundingClientRect();
+          const targetTop     = scrollContainer.scrollTop + cursorRect.top - containerRect.top - containerRect.height / 2;
+          scrollContainer.scrollTo({ top: targetTop, behavior: 'smooth' });
+        }
       }
     });
 
@@ -452,6 +459,7 @@ function SheetViewerPage() {
             <span className="bpm-value">{bpm}</span>
           </div>
 
+          {!isTabScore && (
           <div className="key-control">
             <span className="ctrl-label">KEY</span>
             <button className="adj-btn" onClick={() => handleTranspose(-1)} disabled={disabled}>♭</button>
@@ -463,6 +471,7 @@ function SheetViewerPage() {
               </span>
             )}
           </div>
+          )}
         </div>
 
         {/* 중: 재생 */}
