@@ -39,6 +39,21 @@ function DifficultySelectModal({ sheet, onConfirm, onClose, loading }) {
         <p className="modal-sheet-name">"{sheet.name}"</p>
 
         <div className="modal-section">
+          <span className="modal-label">악기</span>
+          <div className="modal-options">
+            {INSTRUMENT_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                className={`modal-option-btn ${instrument === opt.value ? 'selected' : ''}`}
+                onClick={() => setInstrument(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="modal-section">
           <span className="modal-label">목적</span>
           <div className="modal-options">
             {PURPOSE_OPTIONS.map(opt => (
@@ -76,21 +91,6 @@ function DifficultySelectModal({ sheet, onConfirm, onClose, loading }) {
                 key={opt.value}
                 className={`modal-option-btn ${difficulty === opt.value ? 'selected' : ''}`}
                 onClick={() => setDifficulty(opt.value)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="modal-section">
-          <span className="modal-label">악기</span>
-          <div className="modal-options">
-            {INSTRUMENT_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                className={`modal-option-btn ${instrument === opt.value ? 'selected' : ''}`}
-                onClick={() => setInstrument(opt.value)}
               >
                 {opt.label}
               </button>
